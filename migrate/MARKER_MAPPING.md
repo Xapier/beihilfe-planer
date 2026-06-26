@@ -25,12 +25,14 @@ Dokumentation der Marker-Wert-Umwandlung von BOP_SQL_Daten.s3db in das neue Beih
 | `5` | 14 | **BRE offen** | Beitragsrückerstattung (BRE) noch offen |
 | `6` | 25 | **BRE erstattet** | Beitragsrückerstattung (BRE) bereits erstattet |
 | *default* | — | **offen** | Sonstige Fälle (kommen nicht vor) |
+| *(manual)* | — | **eingereicht** | Status kann manuell im Frontend gesetzt werden |
 
 **Anmerkungen**:
 - PKV-Werte 1, 2 kommen in der Quelle nicht vor
 - PKV 4: "entfällt" (kostenlos/Zuzahlung, nicht erstattet)
-- PKV 5 & 6: BRE-Ansprüche (Beamtenversorgung) — technisch werden beide als "erstattet" oder "eingereicht" behandelt
+- PKV 5 & 6: BRE-Ansprüche — unterscheidbar nach Marker
 - **Datierung**: PKV 5 meist neuere Einträge (2025), PKV 6 eher ältere (2021-2022)
+- **"eingereicht"**: Zusätzlicher Status für manuelle Eingabe (z.B. wenn Anspruch eingereicht aber noch nicht bearbeitet)
 
 ---
 
@@ -40,12 +42,14 @@ Dokumentation der Marker-Wert-Umwandlung von BOP_SQL_Daten.s3db in das neue Beih
 | `1` | 1 | **offen** | Beihilfe noch nicht eingereicht |
 | `3` | 152 | **erstattet** | Beihilfe erstattet |
 | `4` | 8 | **entfällt** | Kostenlose Leistung / entfällt |
+| *(manual)* | — | **eingereicht** | Status kann manuell im Frontend gesetzt werden |
 | *default* | — | **offen** | Sonstige Fälle (kommen nicht vor) |
 
 **Anmerkungen**:
-- **Kein "eingereicht"-Status** in den Daten vorhanden (würde Marker 2 entsprechen)
+- **Kein "eingereicht"-Status** von Markern aus der BOP
 - BH 1 kommt praktisch nicht vor (nur 1x) — seltsam, aber möglicher Dateneintrag
 - BH 4: "entfällt" (kostenlos/nicht erstattet)
+- **"eingereicht"**: Zusätzlicher Status für manuelle Eingabe (z.B. wenn Beihilfe-Antrag eingereicht aber noch nicht bearbeitet)
 
 ---
 
