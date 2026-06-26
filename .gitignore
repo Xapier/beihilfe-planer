@@ -34,3 +34,4 @@ npm-debug.log*
 # Build outputs
 dist/
 build/
+migrate/BOP_SQL_Daten.s3db
