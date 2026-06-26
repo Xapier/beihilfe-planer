@@ -243,6 +243,17 @@ async function migrateAufwendungen() {
 
   let count = 0;
 
+  // Marker → Status Mapping
+  // 3 = erstattet, 4 = offen, 5 = eingereicht (PKV), 6 = abgelehnt (PKV), sonst = offen
+  function mapMarker(marker, col) {
+    switch (String(marker)) {
+      case '3': return 'erstattet';
+      case '5': return col === 'pkv' ? 'eingereicht' : 'offen';
+      case '6': return col === 'pkv' ? 'abgelehnt' : 'offen';
+      default:  return 'offen';
+    }
+  }
+
   // 1. Rechnungen
   const rechnungen = await query(oldDb, `
     SELECT 
@@ -254,7 +265,13 @@ async function migrateAufwendungen() {
       Re_Massnahme,
       Re_Nr,
       PKV_Erstattung,
-      BH_Erstattung
+      BH_Erstattung,
+      BET_Erstattung,
+      Rech_marker,
+      PKV_marker,
+      BH_marker,
+      BET_marker,
+      PS_marker
     FROM tbl_Rechnungen
     WHERE Re_Person IS NOT NULL AND Re_Betrag > 0
   `);
@@ -269,8 +286,10 @@ async function migrateAufwendungen() {
 
     await run(newDb,
       `INSERT INTO aufwendungen 
-       (patientId, datum, faelligkeitsDatum, kontaktId, aufTyp, beschreibung, rechnungsNr, betrag, pkvBetrag, beihilfeBetrag, rechnungStatus)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (patientId, datum, faelligkeitsDatum, kontaktId, aufTyp, beschreibung, rechnungsNr, betrag,
+        pkvBetrag, beihilfeBetrag, betBetrag,
+        rechnungStatus, pkvStatus, beihilfeStatus, betStatus, pflegeStatus)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         patientId,
         datum,
@@ -282,7 +301,12 @@ async function migrateAufwendungen() {
         r.Re_Betrag || 0,
         r.PKV_Erstattung || 0,
         r.BH_Erstattung || 0,
-        'offen'
+        r.BET_Erstattung || 0,
+        mapMarker(r.Rech_marker, 'rechnung'),
+        mapMarker(r.PKV_marker, 'pkv'),
+        mapMarker(r.BH_marker, 'beihilfe'),
+        mapMarker(r.BET_marker, 'bet'),
+        mapMarker(r.PS_marker, 'pflege')
       ]
     );
     count++;
