@@ -904,10 +904,15 @@
             document.getElementById('beihilfe-quote-display').textContent = aktuelleQuoten.beihilfe || '-';
             document.getElementById('bet-quote-display').textContent = aktuelleQuoten.bet || '-';
 
-            // Sollbeträge berechnen
-            const pkvSoll = (rechnungsBetrag * aktuelleQuoten.pkv) / 100;
-            const beihilfeSoll = (rechnungsBetrag * aktuelleQuoten.beihilfe) / 100;
-            const betSoll = (rechnungsBetrag * aktuelleQuoten.bet) / 100;
+            // Status auslesen
+            const pkvStatus = document.querySelector('[name="pkv-status"]').value;
+            const betStatus = document.querySelector('[name="bet-status"]').value;
+            const beihilfeStatus = document.querySelector('[name="beihilfe-status"]').value;
+
+            // Sollbeträge berechnen (auf 0 setzen, wenn Status "entfällt")
+            const pkvSoll = pkvStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.pkv) / 100;
+            const betSoll = betStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.bet) / 100;
+            const beihilfeSoll = beihilfeStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.beihilfe) / 100;
 
             document.getElementById('pkv-sollbetrag').textContent = `€ ${pkvSoll.toFixed(2)}`;
             document.getElementById('beihilfe-sollbetrag').textContent = `€ ${beihilfeSoll.toFixed(2)}`;
@@ -943,9 +948,15 @@
         function prefillActualAmountsFromCalculated() {
             const rechnungsBetrag = parseFloat(document.getElementById('rechnungsBetrag').value) || 0;
 
-            const pkvSoll = (rechnungsBetrag * aktuelleQuoten.pkv) / 100;
-            const beihilfeSoll = (rechnungsBetrag * aktuelleQuoten.beihilfe) / 100;
-            const betSoll = (rechnungsBetrag * aktuelleQuoten.bet) / 100;
+            // Status auslesen
+            const pkvStatus = document.querySelector('[name="pkv-status"]').value;
+            const betStatus = document.querySelector('[name="bet-status"]').value;
+            const beihilfeStatus = document.querySelector('[name="beihilfe-status"]').value;
+
+            // Sollbeträge berechnen (auf 0 setzen, wenn Status "entfällt")
+            const pkvSoll = pkvStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.pkv) / 100;
+            const beihilfeSoll = beihilfeStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.beihilfe) / 100;
+            const betSoll = betStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.bet) / 100;
 
             document.querySelector('[name="pkv-betrag"]').value = pkvSoll.toFixed(2);
             document.querySelector('[name="beihilfe-betrag"]').value = beihilfeSoll.toFixed(2);
@@ -1177,11 +1188,6 @@
             filterBeschreibung = this.value.toLowerCase();
             // Zeige/verstecke den Clear-Button basierend auf Eingabe
             document.getElementById('clearBeschreibungBtn').style.display = this.value ? 'block' : 'none';
-            applyFilters();
-        });
-
-        document.getElementById('filterBeschreibung').addEventListener('input', function() {
-            filterBeschreibung = this.value.toLowerCase();
             applyFilters();
         });
 
