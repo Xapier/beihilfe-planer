@@ -616,7 +616,7 @@
                     </select>
                 </div>
                 <div style="display: flex; flex-direction: column;">
-                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">📅 Nach Jahr</label>
+                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">📅 Behandlungsjahr</label>
                     <select id="filterJahr" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
                         <option value="">-- Alle Jahre --</option>
                     </select>
@@ -653,7 +653,10 @@
                 </div>
                 <div style="display: flex; flex-direction: column;">
                     <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">🔍 Beschreibung</label>
-                    <input type="text" id="filterBeschreibung" placeholder="Suchtext..." style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <input type="text" id="filterBeschreibung" placeholder="Suchtext..." style="flex: 1; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
+                        <button type="button" id="clearBeschreibungBtn" style="padding: 6px 8px; background: #e0e0e0; color: #333; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background 0.3s; display: none;" title="Filter löschen" onclick="clearBeschreibungFilter()">✕</button>
+                    </div>
                 </div>
                 <div style="display: flex; flex-direction: column; justify-content: flex-end;">
                     <button type="button" onclick="resetFilters()" style="padding: 8px 10px; background: #ff6b6b; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.3s;">🔄 Filter zurücksetzen</button>
@@ -1039,6 +1042,7 @@
         // =========================================================================
         function initializeYearFilter() {
             const select = document.getElementById('filterJahr');
+            const currentYear = new Date().getFullYear().toString();
             
             // Nur die erste "-- Alle Jahre --" Option behalten
             while (select.children.length > 1) {
@@ -1058,8 +1062,15 @@
             if (filterJahr && [...select.options].some(o => o.value === filterJahr)) {
                 select.value = filterJahr;
             } else {
-                select.value = '';
-                filterJahr = '';
+                // Setze Standard auf aktuelles Jahr, wenn verfügbar
+                const hasCurrentYear = [...select.options].some(o => o.value === currentYear);
+                if (hasCurrentYear && !filterJahr) {
+                    select.value = currentYear;
+                    filterJahr = currentYear;
+                } else {
+                    select.value = '';
+                    filterJahr = '';
+                }
             }
         }
 
@@ -1090,6 +1101,16 @@
         }
 
         // =========================================================================
+        // BESCHREIBUNGS-FILTER LÖSCHEN
+        // =========================================================================
+        function clearBeschreibungFilter() {
+            filterBeschreibung = '';
+            document.getElementById('filterBeschreibung').value = '';
+            document.getElementById('clearBeschreibungBtn').style.display = 'none';
+            applyFilters();
+        }
+
+        // =========================================================================
         // FILTER RESET FUNCTION
         // =========================================================================
         function resetFilters() {
@@ -1106,6 +1127,7 @@
             document.getElementById('filterPkvStatus').value = '';
             document.getElementById('filterBeihilfeStatus').value = '';
             document.getElementById('filterBeschreibung').value = '';
+            document.getElementById('clearBeschreibungBtn').style.display = 'none';
             
             applyFilters();
         }
@@ -1115,6 +1137,7 @@
             filterPatient = this.value;
             filterBeschreibung = '';
             document.getElementById('filterBeschreibung').value = '';
+            document.getElementById('clearBeschreibungBtn').style.display = 'none';
             applyFilters();
         });
 
@@ -1122,6 +1145,7 @@
             filterJahr = this.value;
             filterBeschreibung = '';
             document.getElementById('filterBeschreibung').value = '';
+            document.getElementById('clearBeschreibungBtn').style.display = 'none';
             applyFilters();
         });
 
@@ -1129,6 +1153,7 @@
             filterRechnungStatus = this.value;
             filterBeschreibung = '';
             document.getElementById('filterBeschreibung').value = '';
+            document.getElementById('clearBeschreibungBtn').style.display = 'none';
             applyFilters();
         });
 
@@ -1136,6 +1161,7 @@
             filterPkvStatus = this.value;
             filterBeschreibung = '';
             document.getElementById('filterBeschreibung').value = '';
+            document.getElementById('clearBeschreibungBtn').style.display = 'none';
             applyFilters();
         });
 
@@ -1143,11 +1169,14 @@
             filterBeihilfeStatus = this.value;
             filterBeschreibung = '';
             document.getElementById('filterBeschreibung').value = '';
+            document.getElementById('clearBeschreibungBtn').style.display = 'none';
             applyFilters();
         });
 
         document.getElementById('filterBeschreibung').addEventListener('input', function() {
             filterBeschreibung = this.value.toLowerCase();
+            // Zeige/verstecke den Clear-Button basierend auf Eingabe
+            document.getElementById('clearBeschreibungBtn').style.display = this.value ? 'block' : 'none';
             applyFilters();
         });
 
