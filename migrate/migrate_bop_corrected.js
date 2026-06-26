@@ -119,7 +119,7 @@ async function createSchema() {
       betrag REAL NOT NULL,
       rechnungStatus TEXT DEFAULT 'offen',
       pkvStatus TEXT DEFAULT 'offen',
-      betStatus TEXT DEFAULT 'offen',
+      betStatus TEXT DEFAULT 'nicht nötig',
       beihilfeStatus TEXT DEFAULT 'offen',
       pflegeStatus TEXT DEFAULT 'offen',
       pkvBetrag REAL DEFAULT 0,
@@ -244,8 +244,12 @@ async function migrateAufwendungen() {
   let count = 0;
 
   // Marker → Status Mapping
-  // 3 = erstattet, 4 = offen, 5 = eingereicht (PKV), 6 = abgelehnt (PKV), sonst = offen
+  // Rechnung: 0 = bezahlt
+  // PKV/BH:   3 = erstattet, 4 = offen, 5 = eingereicht (PKV), 6 = abgelehnt (PKV)
+  // BET:      immer 'nicht nötig'
   function mapMarker(marker, col) {
+    if (col === 'rechnung') return String(marker) === '0' ? 'bezahlt' : 'offen';
+    if (col === 'bet') return 'nicht nötig';
     switch (String(marker)) {
       case '3': return 'erstattet';
       case '5': return col === 'pkv' ? 'eingereicht' : 'offen';
