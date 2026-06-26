@@ -450,118 +450,11 @@
             </div>
         </div>
 
-        <!-- ===== TABELLEN-ÜBERSICHT ===== -->
-        <div class="table-section">
-            <h2 class="section-title">📊 Belegübersicht mit Ampelanzeige</h2>
-            
-            <!-- FILTER -->
-            <div style="background: #f0f4ff; border: 1px solid #e0e7ff; border-radius: 8px; padding: 15px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
-                <div style="display: flex; flex-direction: column;">
-                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">👤 Patient</label>
-                    <select id="filterPatient" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
-                        <option value="">-- Alle Patienten --</option>
-                    </select>
-                </div>
-                <div style="display: flex; flex-direction: column;">
-                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">📅 Nach Jahr</label>
-                    <select id="filterJahr" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
-                        <option value="">-- Alle Jahre --</option>
-                    </select>
-                </div>
-                <div style="display: flex; flex-direction: column;">
-                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">🧾 Rechnungsstatus</label>
-                    <select id="filterRechnungStatus" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
-                        <option value="">-- Alle --</option>
-                        <option value="offen">Offen</option>
-                        <option value="bezahlt">Bezahlt</option>
-                    </select>
-                </div>
-                <div style="display: flex; flex-direction: column;">
-                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">🏥 PKV Status</label>
-                    <select id="filterPkvStatus" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
-                        <option value="">-- Alle --</option>
-                        <option value="offen">Offen</option>
-                        <option value="eingereicht">Eingereicht</option>
-                        <option value="erstattet">Erstattet</option>
-                        <option value="BRE offen">BRE offen</option>
-                        <option value="BRE erstattet">BRE erstattet</option>
-                        <option value="entfällt">Entfällt</option>
-                    </select>
-                </div>
-                <div style="display: flex; flex-direction: column;">
-                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">💰 Beihilfe Status</label>
-                    <select id="filterBeihilfeStatus" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
-                        <option value="">-- Alle --</option>
-                        <option value="offen">Offen</option>
-                        <option value="eingereicht">Eingereicht</option>
-                        <option value="erstattet">Erstattet</option>
-                        <option value="entfällt">Entfällt</option>
-                    </select>
-                </div>
-                <div style="display: flex; flex-direction: column;">
-                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">🔍 Beschreibung</label>
-                    <input type="text" id="filterBeschreibung" placeholder="Suchtext..." style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
-                </div>
-                <div style="display: flex; flex-direction: column; justify-content: flex-end;">
-                    <button type="button" onclick="resetFilters()" style="padding: 8px 10px; background: #ff6b6b; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.3s;">🔄 Filter zurücksetzen</button>
-                </div>
-            </div>
-
-            <div id="filterResults" style="display: none; font-size: 12px; color: #666; padding: 10px; background: white; border: 1px solid #ffc107; border-left: 3px solid #ffc107; border-radius: 6px; margin-bottom: 15px;"></div>
-
-            <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Klicken Sie auf eine Zeile um diese zu bearbeiten</p>
-            <table class="overview-table" id="aufwendungenTable">
-                <thead>
-                    <tr>
-                        <th class="date-col" onclick="sortTable('datum')" style="cursor: pointer;" title="Klicken zum Sortieren">
-                            📅 Behandlung <span id="sort-datum" style="font-size: 10px;"></span>
-                        </th>
-                        <th class="date-col" onclick="sortTable('faelligkeitsDatum')" style="cursor: pointer;" title="Klicken zum Sortieren">
-                            📅 Fällig <span id="sort-faelligkeitsDatum" style="font-size: 10px;"></span>
-                        </th>
-                        <th class="patient-col">Patient</th>
-                        <th class="doctor-col">Arzt / Praxis</th>
-                        <th style="text-align: left;">Beschreibung</th>
-                        <th style="text-align: center; width: 110px;">Rechnungs-Nr.</th>
-                        <th class="amount-col">Betrag</th>
-                        <th class="amount-col">Eigenbehalt</th>
-                        <th colspan="4" style="text-align: center;">4-Säulen Status</th>
-                        <th class="actions-col">Aktionen</th>
-                    </tr>
-                    <tr>
-                        <th colspan="8"></th>
-                        <th class="status-col" title="Rechnung">Rechn.</th>
-                        <th class="status-col" title="PKV">PKV</th>
-                        <th class="status-col" title="BET">BET</th>
-                        <th class="status-col" title="Beihilfe">Beihilfe</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr>
-                        <td colspan="14" class="empty-state">
-                            <div style="padding: 40px 0;">
-                                <div class="empty-state-icon">📭</div>
-                                <p>Noch keine Aufwendungen erfasst</p>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-                <tfoot id="tableSummary" style="display: none; background-color: #f5f5f5; font-weight: bold; border-top: 2px solid #ddd;">
-                    <tr>
-                        <td colspan="6">Summe:</td>
-                        <td id="summeBetrag" style="text-align: right; padding: 12px;">€0,00</td>
-                        <td id="summeEigenbehalt" style="text-align: right; padding: 12px;">€0,00</td>
-                        <td colspan="6"></td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-
         <!-- ===== FORMULAR: NEUE AUFWENDUNG ===== -->
         <form class="form-section" id="aufwendungenForm">
             <h2 class="section-title">➕ Neue Aufwendung erfassen</h2>
             <div class="info-box">
-                💡 <strong>Tipp:</strong> Füllen Sie die Grunddaten aus und wählen Sie den Status für jede Säule (5-Säulen-Prinzip). Die Ampel in der Tabelle oben aktualisiert sich automatisch.
+                💡 <strong>Tipp:</strong> Füllen Sie die Grunddaten aus und wählen Sie den Status für jede Säule (5-Säulen-Prinzip). Die Ampel in der Tabelle unten aktualisiert sich automatisch.
             </div>
 
             <!-- BUTTONS -->
@@ -736,7 +629,113 @@
 
             </div>
         </form>
-    </div>
+
+        <!-- ===== TABELLEN-ÜBERSICHT ===== -->
+        <div class="table-section">
+            <h2 class="section-title">📊 Belegübersicht mit Ampelanzeige</h2>
+            
+            <!-- FILTER -->
+            <div style="background: #f0f4ff; border: 1px solid #e0e7ff; border-radius: 8px; padding: 15px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">👤 Patient</label>
+                    <select id="filterPatient" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
+                        <option value="">-- Alle Patienten --</option>
+                    </select>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">📅 Nach Jahr</label>
+                    <select id="filterJahr" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
+                        <option value="">-- Alle Jahre --</option>
+                    </select>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">🧾 Rechnungsstatus</label>
+                    <select id="filterRechnungStatus" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
+                        <option value="">-- Alle --</option>
+                        <option value="offen">Offen</option>
+                        <option value="bezahlt">Bezahlt</option>
+                    </select>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">🏥 PKV Status</label>
+                    <select id="filterPkvStatus" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
+                        <option value="">-- Alle --</option>
+                        <option value="offen">Offen</option>
+                        <option value="eingereicht">Eingereicht</option>
+                        <option value="erstattet">Erstattet</option>
+                        <option value="BRE offen">BRE offen</option>
+                        <option value="BRE erstattet">BRE erstattet</option>
+                        <option value="entfällt">Entfällt</option>
+                    </select>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">💰 Beihilfe Status</label>
+                    <select id="filterBeihilfeStatus" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
+                        <option value="">-- Alle --</option>
+                        <option value="offen">Offen</option>
+                        <option value="eingereicht">Eingereicht</option>
+                        <option value="erstattet">Erstattet</option>
+                        <option value="entfällt">Entfällt</option>
+                    </select>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">🔍 Beschreibung</label>
+                    <input type="text" id="filterBeschreibung" placeholder="Suchtext..." style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
+                </div>
+                <div style="display: flex; flex-direction: column; justify-content: flex-end;">
+                    <button type="button" onclick="resetFilters()" style="padding: 8px 10px; background: #ff6b6b; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.3s;">🔄 Filter zurücksetzen</button>
+                </div>
+            </div>
+
+            <div id="filterResults" style="display: none; font-size: 12px; color: #666; padding: 10px; background: white; border: 1px solid #ffc107; border-left: 3px solid #ffc107; border-radius: 6px; margin-bottom: 15px;"></div>
+
+            <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Klicken Sie auf eine Zeile um diese zu bearbeiten</p>
+            <table class="overview-table" id="aufwendungenTable">
+                <thead>
+                    <tr>
+                        <th class="date-col" onclick="sortTable('datum')" style="cursor: pointer;" title="Klicken zum Sortieren">
+                            📅 Behandlung <span id="sort-datum" style="font-size: 10px;"></span>
+                        </th>
+                        <th class="date-col" onclick="sortTable('faelligkeitsDatum')" style="cursor: pointer;" title="Klicken zum Sortieren">
+                            📅 Fällig <span id="sort-faelligkeitsDatum" style="font-size: 10px;"></span>
+                        </th>
+                        <th class="patient-col">Patient</th>
+                        <th class="doctor-col">Arzt / Praxis</th>
+                        <th style="text-align: left;">Beschreibung</th>
+                        <th style="text-align: center; width: 110px;">Rechnungs-Nr.</th>
+                        <th class="amount-col">Betrag</th>
+                        <th class="amount-col">Eigenbehalt</th>
+                        <th colspan="4" style="text-align: center;">4-Säulen Status</th>
+                        <th class="actions-col">Aktionen</th>
+                    </tr>
+                    <tr>
+                        <th colspan="8"></th>
+                        <th class="status-col" title="Rechnung">Rechn.</th>
+                        <th class="status-col" title="PKV">PKV</th>
+                        <th class="status-col" title="BET">BET</th>
+                        <th class="status-col" title="Beihilfe">Beihilfe</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="14" class="empty-state">
+                            <div style="padding: 40px 0;">
+                                <div class="empty-state-icon">📭</div>
+                                <p>Noch keine Aufwendungen erfasst</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot id="tableSummary" style="display: none; background-color: #f5f5f5; font-weight: bold; border-top: 2px solid #ddd;">
+                    <tr>
+                        <td colspan="6">Summe:</td>
+                        <td id="summeBetrag" style="text-align: right; padding: 12px;">€0,00</td>
+                        <td id="summeEigenbehalt" style="text-align: right; padding: 12px;">€0,00</td>
+                        <td colspan="6"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
 
     <script src="api.js"></script>
     <script>
