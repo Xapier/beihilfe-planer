@@ -1400,11 +1400,6 @@
             const aufTyp = document.getElementById('aufTyp').value;
             const betrag = parseFloat(document.getElementById('rechnungsBetrag').value);
 
-            // Nur speichern wenn Pflichtfelder gefüllt sind
-            if (!patientId || !datum || !faelligkeitsDatum || !aufTyp || !betrag) {
-                return;
-            }
-
             const kontaktId = document.getElementById('kontakt').value || null;
             const beschreibung = document.getElementById('beschreibung').value;
             const rechnungsNr = document.getElementById('rechnungsNr').value;
@@ -1430,6 +1425,15 @@
 
             const payload = { patientId, datum, faelligkeitsDatum, kontaktId, aufTyp, beschreibung, rechnungsNr, betrag, status, betraege, daten };
 
+            // Nur speichern wenn alle Pflichtfelder gefüllt sind (nur bei neuen oder existierenden Aufwendungen)
+            if (!patientId || !datum || !faelligkeitsDatum || !aufTyp || !betrag) {
+                // Trotzdem die Tabelle aktualisieren, damit der Benutzer Feedback sieht
+                aufwendungen = await API.aufwendungen.getAll();
+                contacts = await API.contacts.getAll();
+                renderTable();
+                return;
+            }
+
             try {
                 if (editingId) {
                     await API.aufwendungen.update(editingId, payload);
@@ -1440,6 +1444,7 @@
                     autoSaveId = created.id;
                 }
                 aufwendungen = await API.aufwendungen.getAll();
+                contacts = await API.contacts.getAll();
                 renderTable();
             } catch (err) {
                 console.error('Auto-Save Fehler:', err);
