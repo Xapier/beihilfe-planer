@@ -174,32 +174,55 @@ async function migratePatients() {
 }
 
 async function migrateContacts() {
-  const oldContacts = await query(oldDb, `
-    SELECT 
-      K_ID,
-      K_Arzt as name,
-      K_Tel as phone,
-      K_Mail as email,
-      K_Bem as notes
-    FROM tbl_Kontakte
-    WHERE K_Arzt IS NOT NULL AND K_Arzt != ''
+  // tbl_Kontakte ist leer - Kontakte aus Re_Aussteller in tbl_Rechnungen extrahieren
+  // Einige Aussteller sind keine echten Kontakte (Fahrtkosten-Sammelpositionen, Platzhalter)
+  const SKIP_AUSSTELLER = [
+    '<Rechnungsaussteller>',
+    'Krankheitskosten Steuererklärung'
+  ];
+  const FAHRTKOSTEN_PATTERN = /Fahrtkosten/i;
+
+  const aussteller = await query(oldDb, `
+    SELECT DISTINCT Re_Aussteller as name
+    FROM tbl_Rechnungen
+    WHERE Re_Aussteller IS NOT NULL AND Re_Aussteller != ''
+    ORDER BY Re_Aussteller
   `);
 
-  const contactMap = {}; // Mapping: name -> id
+  const contactMap = {};
 
-  for (const contact of oldContacts) {
+  for (const a of aussteller) {
+    const name = (a.name || '').trim();
+    if (!name) continue;
+    if (SKIP_AUSSTELLER.includes(name)) continue;
+    if (FAHRTKOSTEN_PATTERN.test(name)) continue;
+
+    // Fachrichtung aus dem Namen ableiten
+    let specialty = null;
+    if (/\(ZA\)|Zahn/i.test(name))          specialty = 'Zahnarzt';
+    else if (/\(KFO\)|Kieferorth/i.test(name)) specialty = 'Kieferorthopäde';
+    else if (/Labor/i.test(name))             specialty = 'Labor';
+    else if (/Klinik|KH\b|Uniklinik/i.test(name)) specialty = 'Klinik';
+    else if (/Urolog/i.test(name))            specialty = 'Urologie';
+    else if (/HNO/i.test(name))               specialty = 'HNO';
+    else if (/Orthop/i.test(name))            specialty = 'Orthopädie';
+    else if (/Pneumo/i.test(name))            specialty = 'Pneumologie';
+    else if (/Anästhes/i.test(name))          specialty = 'Anästhesie';
+    else if (/Chirurg/i.test(name))           specialty = 'Chirurgie';
+    else if (/Schlaf/i.test(name))            specialty = 'Schlafmedizin';
+    else if (/Dr\.|Privatärzt/i.test(name))   specialty = 'Arzt';
+
     const id = uuidv4();
     await run(newDb,
-      `INSERT INTO contacts (id, name, specialty, phone, email)
-       VALUES (?, ?, ?, ?, ?)`,
-      [id, contact.name, 'Arzt', contact.phone, contact.email]
+      `INSERT INTO contacts (id, name, specialty) VALUES (?, ?, ?)`,
+      [id, name, specialty]
     );
-
-    contactMap[contact.name] = id;
+    contactMap[name] = id;
   }
 
-  console.log(`   ✓ ${oldContacts.length} Kontakte migriert`);
-  return { count: oldContacts.length, map: contactMap };
+  const count = Object.keys(contactMap).length;
+  console.log(`   ✓ ${count} Kontakte migriert (aus Re_Aussteller)`);
+  return { count, map: contactMap };
 }
 
 async function migrateAufwendungen() {
@@ -225,6 +248,7 @@ async function migrateAufwendungen() {
     SELECT 
       Re_ID,
       Re_Person,
+      Re_Aussteller,
       Re_Datum,
       Re_Betrag,
       Re_Massnahme,
@@ -240,16 +264,18 @@ async function migrateAufwendungen() {
     if (!patientId) continue;
 
     const datum = r.Re_Datum ? new Date(r.Re_Datum).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
-    const fuelligkeitsDatum = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+    const faelligkeitsDatum = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+    const kontaktId = r.Re_Aussteller ? (contactMap[r.Re_Aussteller] || null) : null;
 
     await run(newDb,
       `INSERT INTO aufwendungen 
-       (patientId, datum, faelligkeitsDatum, aufTyp, beschreibung, rechnungsNr, betrag, pkvBetrag, beihilfeBetrag, rechnungStatus)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (patientId, datum, faelligkeitsDatum, kontaktId, aufTyp, beschreibung, rechnungsNr, betrag, pkvBetrag, beihilfeBetrag, rechnungStatus)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         patientId,
         datum,
-        fuelligkeitsDatum,
+        faelligkeitsDatum,
+        kontaktId,
         'Rechnung',
         r.Re_Massnahme || '',
         r.Re_Nr || '',
