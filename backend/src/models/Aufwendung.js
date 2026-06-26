@@ -50,10 +50,9 @@ class Aufwendung {
     const result = await db.run(
       `INSERT INTO aufwendungen (
         patientId, datum, faelligkeitsDatum, kontaktId, aufTyp, beschreibung,
-        rechnungsNr, betrag, rechnungStatus, pkvStatus, betStatus, 
-        beihilfeStatus, pflegeStatus, pkvBetrag, betBetrag, beihilfeBetrag,
-        pflegeBetrag, statusDaten
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        rechnungsNr, betrag, rechnungStatus, pkvStatus, betStatus,
+        beihilfeStatus, pkvBetrag, betBetrag, beihilfeBetrag, statusDaten
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         data.patientId,
         data.datum,
@@ -67,11 +66,9 @@ class Aufwendung {
         data.status?.pkv || 'offen',
         data.status?.bet || 'offen',
         data.status?.beihilfe || 'offen',
-        data.status?.pflege || 'offen',
         data.betraege?.pkv || 0,
         data.betraege?.bet || 0,
         data.betraege?.beihilfe || 0,
-        data.betraege?.pflege || 0,
         JSON.stringify(statusDaten)
       ]
     );
@@ -138,10 +135,6 @@ class Aufwendung {
         updates.push('beihilfeStatus = ?');
         values.push(data.status.beihilfe);
       }
-      if (data.status.pflege !== undefined) {
-        updates.push('pflegeStatus = ?');
-        values.push(data.status.pflege);
-      }
     }
     if (data.betraege) {
       if (data.betraege.pkv !== undefined) {
@@ -155,10 +148,6 @@ class Aufwendung {
       if (data.betraege.beihilfe !== undefined) {
         updates.push('beihilfeBetrag = ?');
         values.push(data.betraege.beihilfe);
-      }
-      if (data.betraege.pflege !== undefined) {
-        updates.push('pflegeBetrag = ?');
-        values.push(data.betraege.pflege);
       }
     }
     if (data.daten) {
@@ -205,14 +194,12 @@ class Aufwendung {
         rechnung: row.rechnungStatus,
         pkv: row.pkvStatus,
         bet: row.betStatus,
-        beihilfe: row.beihilfeStatus,
-        pflege: row.pflegeStatus
+        beihilfe: row.beihilfeStatus
       },
       betraege: {
         pkv: row.pkvBetrag,
         bet: row.betBetrag,
-        beihilfe: row.beihilfeBetrag,
-        pflege: row.pflegeBetrag
+        beihilfe: row.beihilfeBetrag
       },
       daten: row.statusDaten ? JSON.parse(row.statusDaten) : {}
     };

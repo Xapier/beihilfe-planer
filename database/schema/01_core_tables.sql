@@ -66,13 +66,10 @@ CREATE TABLE IF NOT EXISTS aufwendungen (
   pkvStatus TEXT DEFAULT 'offen',          -- offen, eingereicht, erstattet, abgelehnt
   betStatus TEXT DEFAULT 'offen',          -- offen, eingereicht, erstattet, abgelehnt
   beihilfeStatus TEXT DEFAULT 'offen',     -- offen, eingereicht, erstattet, abgelehnt
-  pflegeStatus TEXT DEFAULT 'offen',       -- offen, geplant, erledigt
-  
   -- Tatsächliche Beträge (berechnet)
   pkvBetrag REAL DEFAULT 0,
   betBetrag REAL DEFAULT 0,
   beihilfeBetrag REAL DEFAULT 0,
-  pflegeBetrag REAL DEFAULT 0,
   
   -- Status-Historie (JSON)
   statusDaten TEXT,

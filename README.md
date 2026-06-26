@@ -25,7 +25,6 @@ Kern der Anwendung. Jede Aufwendung durchläuft ein **5-Säulen-System**:
 | **PKV** | Einreichung und Erstattung durch die private Krankenversicherung |
 | **BET** | Beamten-Ergänzungs-Tarif (Sammeleinreichung) |
 | **Beihilfe** | Staatliche Beihilfe (Antrag bei der Beihilfestelle) |
-| **Pflege** | Pflegezusatz |
 
 Jede Säule hat einen eigenen Status (`offen` → `eingereicht` → `erstattet`/`abgelehnt`) und einen Erstattungsbetrag.
 

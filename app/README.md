@@ -71,7 +71,6 @@ Jede Aufwendung hat 5 unabhängige Status-Spalten:
 | PKV | offen → eingereicht → erstattet / abgelehnt |
 | BET | offen → eingereicht → erstattet / abgelehnt |
 | Beihilfe | offen → eingereicht → erstattet / abgelehnt |
-| Pflege | offen → geplant → erledigt |
 
 **Farbkodierung:**
 - Rot — offen

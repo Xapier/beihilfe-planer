@@ -121,11 +121,9 @@ async function createSchema() {
       pkvStatus TEXT DEFAULT 'offen',
       betStatus TEXT DEFAULT 'nicht nötig',
       beihilfeStatus TEXT DEFAULT 'offen',
-      pflegeStatus TEXT DEFAULT 'offen',
       pkvBetrag REAL DEFAULT 0,
       betBetrag REAL DEFAULT 0,
       beihilfeBetrag REAL DEFAULT 0,
-      pflegeBetrag REAL DEFAULT 0,
       statusDaten TEXT,
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -274,8 +272,7 @@ async function migrateAufwendungen() {
       Rech_marker,
       PKV_marker,
       BH_marker,
-      BET_marker,
-      PS_marker
+      BET_marker
     FROM tbl_Rechnungen
     WHERE Re_Person IS NOT NULL AND Re_Betrag > 0
   `);
@@ -292,8 +289,8 @@ async function migrateAufwendungen() {
       `INSERT INTO aufwendungen 
        (patientId, datum, faelligkeitsDatum, kontaktId, aufTyp, beschreibung, rechnungsNr, betrag,
         pkvBetrag, beihilfeBetrag, betBetrag,
-        rechnungStatus, pkvStatus, beihilfeStatus, betStatus, pflegeStatus)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        rechnungStatus, pkvStatus, beihilfeStatus, betStatus)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         patientId,
         datum,
@@ -309,8 +306,7 @@ async function migrateAufwendungen() {
         mapMarker(r.Rech_marker, 'rechnung'),
         mapMarker(r.PKV_marker, 'pkv'),
         mapMarker(r.BH_marker, 'beihilfe'),
-        mapMarker(r.BET_marker, 'bet'),
-        mapMarker(r.PS_marker, 'pflege')
+        mapMarker(r.BET_marker, 'bet')
       ]
     );
     count++;

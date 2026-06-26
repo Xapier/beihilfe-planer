@@ -534,7 +534,6 @@
                         <th class="status-col" title="PKV">P</th>
                         <th class="status-col" title="BET">B</th>
                         <th class="status-col" title="Beihilfe">H</th>
-                        <th class="status-col" title="Pflege">F</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -737,27 +736,8 @@
                     </div>
                 </div>
 
-                <!-- PFLEGE -->
-                <div class="pillar">
-                    <div class="pillar-title">🏥 Pflege</div>
-                    <div class="pillar-control">
-                        <select name="pflege-status" onchange="updateCalculations(); handleStatusChange('pflege')">
-                            <option value="offen">Offen</option>
-                            <option value="bearbeitung">In Bearbeitung</option>
-                            <option value="erledigt">Erledigt</option>
-                            <option value="nicht-noetig" selected>Nicht nötig</option>
-                        </select>
-                    </div>
-                    <div class="pillar-control">
-                        <input type="date" name="pflege-datum" placeholder="Datum">
-                    </div>
-                    <div style="font-size: 10px; color: #666; margin-top: 8px; padding: 5px; background: #f0f0f0; border-radius: 3px;">
-                        <strong>Quote:</strong> <span id="pflege-quote-display">-</span>%<br>
-                        <strong>Sollbetrag:</strong> <span id="pflege-sollbetrag">€ 0.00</span><br>
-                        <input type="number" name="pflege-betrag" min="0" step="0.01" placeholder="Tatsächlich" onchange="updateCalculations()" style="width: 100%; margin-top: 3px; padding: 3px; font-size: 9px;">
-                        <div style="margin-top: 3px; color: #f44;" id="pflege-diff"></div>
-                    </div>
-                </div>
+            </div><!-- Ende 5-Säulen -->
+
             </div>
         </form>
     </div>
@@ -861,8 +841,7 @@
                 aktuelleQuoten = {
                     pkv: patient.pkvQuote || 0,
                     beihilfe: patient.beihilfeQuote || 0,
-                    bet: 0,
-                    pflege: 0
+                    bet: 0
                 };
                 updateCalculations();
                 // Istbeträge mit Sollbeträgen füllen, aber nur wenn kein Beleg bearbeitet wird
@@ -899,30 +878,25 @@
             document.getElementById('pkv-quote-display').textContent = aktuelleQuoten.pkv || '-';
             document.getElementById('beihilfe-quote-display').textContent = aktuelleQuoten.beihilfe || '-';
             document.getElementById('bet-quote-display').textContent = aktuelleQuoten.bet || '-';
-            document.getElementById('pflege-quote-display').textContent = aktuelleQuoten.pflege || '-';
 
             // Sollbeträge berechnen
             const pkvSoll = (rechnungsBetrag * aktuelleQuoten.pkv) / 100;
             const beihilfeSoll = (rechnungsBetrag * aktuelleQuoten.beihilfe) / 100;
             const betSoll = (rechnungsBetrag * aktuelleQuoten.bet) / 100;
-            const pflegeSoll = (rechnungsBetrag * aktuelleQuoten.pflege) / 100;
 
             document.getElementById('pkv-sollbetrag').textContent = `€ ${pkvSoll.toFixed(2)}`;
             document.getElementById('beihilfe-sollbetrag').textContent = `€ ${beihilfeSoll.toFixed(2)}`;
             document.getElementById('bet-sollbetrag').textContent = `€ ${betSoll.toFixed(2)}`;
-            document.getElementById('pflege-sollbetrag').textContent = `€ ${pflegeSoll.toFixed(2)}`;
 
             // Istbeträge auslesen
             const pkvIst = parseFloat(document.querySelector('[name="pkv-betrag"]').value) || 0;
             const beihilfeIst = parseFloat(document.querySelector('[name="beihilfe-betrag"]').value) || 0;
             const betIst = parseFloat(document.querySelector('[name="bet-betrag"]').value) || 0;
-            const pflegeIst = parseFloat(document.querySelector('[name="pflege-betrag"]').value) || 0;
 
             // Differenzen berechnen und anzeigen
             showDifference('pkv', pkvSoll, pkvIst);
             showDifference('beihilfe', beihilfeSoll, beihilfeIst);
             showDifference('bet', betSoll, betIst);
-            showDifference('pflege', pflegeSoll, pflegeIst);
         }
 
         function showDifference(saeule, soll, ist) {
@@ -947,12 +921,10 @@
             const pkvSoll = (rechnungsBetrag * aktuelleQuoten.pkv) / 100;
             const beihilfeSoll = (rechnungsBetrag * aktuelleQuoten.beihilfe) / 100;
             const betSoll = (rechnungsBetrag * aktuelleQuoten.bet) / 100;
-            const pflegeSoll = (rechnungsBetrag * aktuelleQuoten.pflege) / 100;
 
             document.querySelector('[name="pkv-betrag"]').value = pkvSoll.toFixed(2);
             document.querySelector('[name="beihilfe-betrag"]').value = beihilfeSoll.toFixed(2);
             document.querySelector('[name="bet-betrag"]').value = betSoll.toFixed(2);
-            document.querySelector('[name="pflege-betrag"]').value = pflegeSoll.toFixed(2);
 
             updateCalculations();
         }
@@ -1311,7 +1283,7 @@
                     const betraege = calculateAmounts(patient, auf);
                     
                     // Eigenbehalt berechnen
-                    const summeZahlungen = betraege.pkvIst + betraege.beihilfeIst + betraege.pflegeIst + betraege.betIst;
+                    const summeZahlungen = betraege.pkvIst + betraege.beihilfeIst + betraege.betIst;
                     const eigenbehalt = Math.max(0, auf.betrag - summeZahlungen);
                     
                     // Fälligkeitswarnung prüfen für Rechnung (R)
@@ -1358,11 +1330,6 @@
                                     <div class="status-indicator" data-status="${auf.status.beihilfe}" title="Beihilfe: ${auf.status.beihilfe}&#10;Datum: ${auf.daten?.beihilfe ? new Date(auf.daten.beihilfe).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${betraege.beihilfeSoll.toFixed(2)}&#10;Ist: €${betraege.beihilfeIst.toFixed(2)}&#10;Offen: €${betraege.beihilfeOffen.toFixed(2)}">H</div>
                                 </div>
                             </td>
-                            <td class="status-col">
-                                <div class="status-cell">
-                                    <div class="status-indicator" data-status="${auf.status.pflege}" title="Pflege: ${auf.status.pflege}&#10;Datum: ${auf.daten?.pflege ? new Date(auf.daten.pflege).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${betraege.pflegeSoll.toFixed(2)}&#10;Ist: €${betraege.pflegeIst.toFixed(2)}&#10;Offen: €${betraege.pflegeOffen.toFixed(2)}">F</div>
-                                </div>
-                            </td>
                             <td class="actions-col">
                                 <button class="action-btn edit-btn" title="Bearbeiten" onclick="event.stopPropagation(); editAufwendung(${auf.id})">✏️</button>
                                 <button class="action-btn delete-btn" title="Löschen" onclick="event.stopPropagation(); deleteAufwendung(${auf.id})">🗑️</button>
@@ -1378,7 +1345,7 @@
             filtered.forEach(auf => {
                 const patient = patients.find(p => p.id == auf.patientId);
                 const betraege = calculateAmounts(patient, auf);
-                const summeZahlungen = betraege.pkvIst + betraege.beihilfeIst + betraege.pflegeIst + betraege.betIst;
+                const summeZahlungen = betraege.pkvIst + betraege.beihilfeIst + betraege.betIst;
                 const eigenbehalt = Math.max(0, auf.betrag - summeZahlungen);
                 
                 summeBetrag += auf.betrag;
@@ -1400,8 +1367,7 @@
                 return {
                     pkvSoll: 0, pkvIst: auf.betraege?.pkv || 0, pkvOffen: 0,
                     beihilfeSoll: 0, beihilfeIst: auf.betraege?.beihilfe || 0, beihilfeOffen: 0,
-                    betSoll: 0, betIst: auf.betraege?.bet || 0, betOffen: 0,
-                    pflegeSoll: 0, pflegeIst: auf.betraege?.pflege || 0, pflegeOffen: 0
+                    betSoll: 0, betIst: auf.betraege?.bet || 0, betOffen: 0
                 };
             }
 
@@ -1415,13 +1381,11 @@
             const pkvIst = auf.betraege?.pkv || 0;
             const beihilfeIst = auf.betraege?.beihilfe || 0;
             const betIst = auf.betraege?.bet || 0;
-            const pflegeIst = auf.betraege?.pflege || 0;
 
             return {
                 pkvSoll, pkvIst, pkvOffen: Math.max(0, pkvSoll - pkvIst),
                 beihilfeSoll, beihilfeIst, beihilfeOffen: Math.max(0, beihilfeSoll - beihilfeIst),
-                betSoll: 0, betIst, betOffen: Math.max(0, 0 - betIst),
-                pflegeSoll: 0, pflegeIst, pflegeOffen: Math.max(0, 0 - pflegeIst)
+                betSoll: 0, betIst, betOffen: Math.max(0, 0 - betIst)
             };
         }
 
@@ -1453,22 +1417,19 @@
                 rechnung: document.querySelector('[name="rechnung-status"]').value,
                 pkv: document.querySelector('[name="pkv-status"]').value,
                 bet: document.querySelector('[name="bet-status"]').value,
-                beihilfe: document.querySelector('[name="beihilfe-status"]').value,
-                pflege: document.querySelector('[name="pflege-status"]').value
+                beihilfe: document.querySelector('[name="beihilfe-status"]').value
             };
 
             const betraege = {
                 pkv: parseFloat(document.querySelector('[name="pkv-betrag"]').value) || 0,
                 bet: parseFloat(document.querySelector('[name="bet-betrag"]').value) || 0,
-                beihilfe: parseFloat(document.querySelector('[name="beihilfe-betrag"]').value) || 0,
-                pflege: parseFloat(document.querySelector('[name="pflege-betrag"]').value) || 0
+                beihilfe: parseFloat(document.querySelector('[name="beihilfe-betrag"]').value) || 0
             };
 
             const daten = {
                 pkv: document.querySelector('[name="pkv-datum"]').value || null,
                 bet: document.querySelector('[name="bet-datum"]').value || null,
-                beihilfe: document.querySelector('[name="beihilfe-datum"]').value || null,
-                pflege: document.querySelector('[name="pflege-datum"]').value || null
+                beihilfe: document.querySelector('[name="beihilfe-datum"]').value || null
             };
 
             const payload = { patientId, datum, faelligkeitsDatum, kontaktId, aufTyp, beschreibung, rechnungsNr, betrag, status, betraege, daten };

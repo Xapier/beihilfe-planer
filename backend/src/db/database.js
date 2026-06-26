@@ -77,13 +77,10 @@ async function createTables() {
       pkvStatus TEXT DEFAULT 'offen',
       betStatus TEXT DEFAULT 'offen',
       beihilfeStatus TEXT DEFAULT 'offen',
-      pflegeStatus TEXT DEFAULT 'offen',
-      
       -- Tatsächliche Beträge
       pkvBetrag REAL DEFAULT 0,
       betBetrag REAL DEFAULT 0,
       beihilfeBetrag REAL DEFAULT 0,
-      pflegeBetrag REAL DEFAULT 0,
       
       -- Daten wann Status gesetzt wurde (JSON)
       statusDaten TEXT,
