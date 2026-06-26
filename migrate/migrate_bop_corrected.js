@@ -199,18 +199,18 @@ async function migrateContacts() {
 
     // Fachrichtung aus dem Namen ableiten
     let specialty = null;
-    if (/\(ZA\)|Zahn/i.test(name))          specialty = 'Zahnarzt';
-    else if (/\(KFO\)|Kieferorth/i.test(name)) specialty = 'Kieferorthopäde';
-    else if (/Labor/i.test(name))             specialty = 'Labor';
+    if (/\(ZA\)|Zahn/i.test(name))              specialty = 'Zahnarzt';
+    else if (/\(KFO\)|Kieferorth/i.test(name))   specialty = 'Kieferorthopädie';
+    else if (/Labor/i.test(name))                specialty = 'Labor';
     else if (/Klinik|KH\b|Uniklinik/i.test(name)) specialty = 'Klinik';
-    else if (/Urolog/i.test(name))            specialty = 'Urologie';
-    else if (/HNO/i.test(name))               specialty = 'HNO';
-    else if (/Orthop/i.test(name))            specialty = 'Orthopädie';
-    else if (/Pneumo/i.test(name))            specialty = 'Pneumologie';
-    else if (/Anästhes/i.test(name))          specialty = 'Anästhesie';
-    else if (/Chirurg/i.test(name))           specialty = 'Chirurgie';
-    else if (/Schlaf/i.test(name))            specialty = 'Schlafmedizin';
-    else if (/Dr\.|Privatärzt/i.test(name))   specialty = 'Arzt';
+    else if (/Urolog/i.test(name))               specialty = 'Urologie';
+    else if (/HNO/i.test(name))                  specialty = 'HNO';
+    else if (/Orthop/i.test(name))               specialty = 'Orthopädie';
+    else if (/Pneumo/i.test(name))               specialty = 'Pneumologie';
+    else if (/Anästhes/i.test(name))             specialty = 'Anästhesiologie';
+    else if (/Chirurg/i.test(name))              specialty = 'Chirurgie';
+    else if (/Schlaf/i.test(name))               specialty = 'Schlafmedizin';
+    else if (/Dr\.|Privatärzt/i.test(name))      specialty = 'Arzt';
 
     const id = uuidv4();
     await run(newDb,
