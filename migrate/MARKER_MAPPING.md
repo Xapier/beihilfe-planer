@@ -21,7 +21,7 @@ Dokumentation der Marker-Wert-Umwandlung von BOP_SQL_Daten.s3db in das neue Beih
 | BOP Wert | Anzahl | → Status | Erklärung |
 |----------|--------|----------|-----------|
 | `3` | 97 | **erstattet** | PKV hat die Kosten erstattet |
-| `4` | 25 | **nicht nötig** | Kostenlose Leistung / Zuzahlung nicht PKV-erstattet |
+| `4` | 25 | **entfällt** | Kostenlose Leistung / Zuzahlung nicht PKV-erstattet |
 | `5` | 14 | **eingereicht** | BRE-Anspruch offen (Beamtenversorgung) |
 | `6` | 25 | **erstattet** | BRE-Anspruch erstattet (Beamtenversorgung) |
 | *default* | — | **offen** | Sonstige Fälle (kommen nicht vor) |
@@ -39,7 +39,7 @@ Dokumentation der Marker-Wert-Umwandlung von BOP_SQL_Daten.s3db in das neue Beih
 |----------|--------|----------|-----------|
 | `1` | 1 | **offen** | Beihilfe noch nicht eingereicht |
 | `3` | 152 | **erstattet** | Beihilfe erstattet |
-| `4` | 8 | **nicht nötig** | Kostenlose Leistung / entfällt |
+| `4` | 8 | **entfällt** | Kostenlose Leistung / entfällt |
 | *default* | — | **offen** | Sonstige Fälle (kommen nicht vor) |
 
 **Anmerkungen**:
@@ -52,10 +52,10 @@ Dokumentation der Marker-Wert-Umwandlung von BOP_SQL_Daten.s3db in das neue Beih
 ### 4. BET (BET_marker)
 | BOP Wert | Anzahl | → Status | Erklärung |
 |----------|--------|----------|-----------|
-| `4` | 161 | **nicht nötig** | BET-Anspruch entfällt immer |
+| `4` | 161 | **entfällt** | BET-Anspruch entfällt immer |
 
 **Anmerkungen**:
-- **Alle Einträge haben BET_marker = 4** → für alle Rechnungen wird BET als "nicht nötig" gesetzt
+- **Alle Einträge haben BET_marker = 4** → für alle Rechnungen wird BET als "entfällt" gesetzt
 - BET (Betriebsöffnung/Bestandteile) gilt hier als nicht zutreffend
 
 ---
@@ -75,13 +75,13 @@ function mapMarker(marker, col) {
   }
   
   if (col === 'bet') {
-    return 'nicht nötig';
+    return 'entfällt';
   }
   
   if (col === 'pkv') {
     switch (m) {
       case '3': return 'erstattet';
-      case '4': return 'nicht nötig';
+      case '4': return 'entfällt';
       case '5': return 'eingereicht';
       case '6': return 'erstattet';
       default: return 'offen';
@@ -92,7 +92,7 @@ function mapMarker(marker, col) {
     switch (m) {
       case '1': return 'offen';
       case '3': return 'erstattet';
-      case '4': return 'nicht nötig';
+      case '4': return 'entfällt';
       default: return 'offen';
     }
   }
@@ -121,14 +121,14 @@ Aus 161 BOP-Rechnungen:
 
 **PKV-Status**:
 - erstattet: 97 (60%)
-- nicht nötig: 25 (16%)
+- entfällt: 25 (16%)
 - eingereicht: 14 (9%)
 - offen: 25 (16%)
 
 **BH-Status**:
 - erstattet: 152 (94%)
-- nicht nötig: 8 (5%)
+- entfällt: 8 (5%)
 - offen: 1 (1%)
 
 **BET-Status**:
-- nicht nötig: 161 (100%)
+- entfällt: 161 (100%)

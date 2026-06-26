@@ -157,7 +157,7 @@
         .status-indicator[data-status="eingereicht"] { background: #ffcc00; color: #333; }
         .status-indicator[data-status="bezahlt"] { background: #44cc44; }
         .status-indicator[data-status="erstattet"] { background: #44cc44; }
-        .status-indicator[data-status="nicht nötig"] { background: #999; opacity: 0.5; cursor: default; }
+        .status-indicator[data-status="entfällt"] { background: #999; opacity: 0.5; cursor: default; }
         .status-indicator[data-status="warning"] { background: #c084fc; color: white; } /* Lila Warnung */
 
         /* Leer-Zustand */
@@ -444,7 +444,7 @@
             </div>
             <div class="legend-item">
                 <div class="legend-box grau"></div>
-                <span><strong>Grau:</strong> Nicht nötig</span>
+                <span><strong>Grau:</strong> Entfällt</span>
             </div>
         </div>
 
@@ -481,7 +481,7 @@
                         <option value="offen">Offen</option>
                         <option value="eingereicht">Eingereicht (BRE offen)</option>
                         <option value="erstattet">Erstattet</option>
-                        <option value="nicht nötig">Nicht nötig</option>
+                        <option value="entfällt">Entfällt</option>
                     </select>
                 </div>
                 <div style="display: flex; flex-direction: column;">
@@ -490,7 +490,7 @@
                         <option value="">-- Alle --</option>
                         <option value="offen">Offen</option>
                         <option value="erstattet">Erstattet</option>
-                        <option value="nicht nötig">Nicht nötig</option>
+                        <option value="entfällt">Entfällt</option>
                     </select>
                 </div>
                 <div style="display: flex; flex-direction: column;">
@@ -670,7 +670,7 @@
                             <option value="offen">Offen</option>
                             <option value="eingereicht">Eingereicht</option>
                             <option value="erstattet">Erstattet</option>
-                            <option value="nicht nötig">Nicht nötig</option>
+                            <option value="entfällt">Entfällt</option>
                         </select>
                     </div>
                     <div class="pillar-control">
@@ -689,7 +689,7 @@
                     <div class="pillar-title">🎯 BET</div>
                     <div class="pillar-control">
                         <select name="bet-status" onchange="updateCalculations(); handleStatusChange('bet')">
-                            <option value="nicht nötig" selected>Nicht nötig</option>
+                            <option value="entfällt" selected>Entfällt</option>
                         </select>
                     </div>
                     <div class="pillar-control">
@@ -710,7 +710,7 @@
                         <select name="beihilfe-status" onchange="updateCalculations(); handleStatusChange('beihilfe')">
                             <option value="offen">Offen</option>
                             <option value="erstattet">Erstattet</option>
-                            <option value="nicht nötig">Nicht nötig</option>
+                            <option value="entfällt">Entfällt</option>
                         </select>
                     </div>
                     <div class="pillar-control">

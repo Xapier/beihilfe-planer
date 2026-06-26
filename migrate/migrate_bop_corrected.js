@@ -119,7 +119,7 @@ async function createSchema() {
       betrag REAL NOT NULL,
       rechnungStatus TEXT DEFAULT 'offen',
       pkvStatus TEXT DEFAULT 'offen',
-      betStatus TEXT DEFAULT 'nicht nötig',
+      betStatus TEXT DEFAULT 'entfällt',
       beihilfeStatus TEXT DEFAULT 'offen',
       pkvBetrag REAL DEFAULT 0,
       betBetrag REAL DEFAULT 0,
@@ -244,7 +244,7 @@ async function migrateAufwendungen() {
   // Marker → Status Mapping
   // Rechnung: 0 = bezahlt
   // PKV/BH:   3 = erstattet, 4 = offen, 5 = eingereicht (PKV), 6 = abgelehnt (PKV)
-  // BET:      immer 'nicht nötig'
+  // BET:      immer 'entfällt'
   function mapMarker(marker, col) {
     const m = String(marker || '');
     
@@ -254,15 +254,15 @@ async function migrateAufwendungen() {
     }
     
     if (col === 'bet') {
-      // BET_marker: immer 4 → nicht nötig
-      return 'nicht nötig';
+      // BET_marker: immer 4 → entfällt
+      return 'entfällt';
     }
     
     if (col === 'pkv') {
-      // PKV_marker: 3→erstattet, 4→nicht nötig, 5→eingereicht (BRE offen), 6→erstattet (BRE erstattet)
+      // PKV_marker: 3→erstattet, 4→entfällt, 5→eingereicht (BRE offen), 6→erstattet (BRE erstattet)
       switch (m) {
         case '3': return 'erstattet';
-        case '4': return 'nicht nötig';
+        case '4': return 'entfällt';
         case '5': return 'eingereicht';
         case '6': return 'erstattet';
         default: return 'offen';
@@ -270,11 +270,11 @@ async function migrateAufwendungen() {
     }
     
     if (col === 'beihilfe') {
-      // BH_marker: 1→offen, 3→erstattet, 4→nicht nötig
+      // BH_marker: 1→offen, 3→erstattet, 4→entfällt
       switch (m) {
         case '1': return 'offen';
         case '3': return 'erstattet';
-        case '4': return 'nicht nötig';
+        case '4': return 'entfällt';
         default: return 'offen';
       }
     }
