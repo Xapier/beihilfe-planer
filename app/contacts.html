@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontakte verwalten - Beihilfe-Planer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .section {
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .custom-type-input {
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .custom-type-input.active {
+            display: block;
+        }
+
+        .custom-type-input label {
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-add {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-add:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+            flex: 1;
+        }
+
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-delete {
+            background: #d32f2f;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-delete:hover {
+            background: #b71c1c;
+        }
+
+        .btn-edit {
+            background: #ffa726;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .btn-edit:hover {
+            background: #fb8c00;
+        }
+
+        .contacts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .contact-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: all 0.3s;
+        }
+
+        .contact-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .contact-type {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .type-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .contact-address {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .filter-section {
+            background: #f0f4ff;
+            border: 1px solid #e0e7ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+
+        .filter-results {
+            font-size: 12px;
+            color: #666;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border-left: 3px solid #ffc107;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-section {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-card {
+                flex-direction: column;
+            }
+
+            .contact-actions {
+                align-self: flex-end;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="home-button">🏠 Startseite</a>
+
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Kontakte verwalten</h1>
+            <p>Verwalten Sie Ärzte, Zahnärzte, Apotheken und andere medizinische Anbieter</p>
+            <div style="margin-top: 15px;">
+                <a href="form_aufwendungen_status.html" style="color: white; text-decoration: none; font-weight: 500; font-size: 14px; padding: 8px 16px; background: rgba(255, 255, 255, 0.2); border-radius: 4px; transition: background 0.3s; display: inline-block;">← Zur Belegerfassung</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- FORMULAR: NEUEN KONTAKT HINZUFÜGEN -->
+            <div class="section">
+                <h2>➕ Neuer Kontakt</h2>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="contactName">Name/Praxis *</label>
+                        <input type="text" id="contactName" name="contactName" placeholder="z.B. Dr. Schmidt oder Zahnarztpraxis XYZ" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactType">Typ *</label>
+                        <select id="contactType" name="contactType" required>
+                            <option value="">-- Bitte wählen --</option>
+                            <optgroup label="Allgemein">
+                                <option value="Hausarzt / Allgemeinmediziner">Hausarzt / Allgemeinmediziner</option>
+                                <option value="Internist">Internist</option>
+                                <option value="Sonstiges">Sonstiges / Benutzerdefiniert</option>
+                            </optgroup>
+                            <optgroup label="Zahnmedizin">
+                                <option value="Zahnarzt">Zahnarzt</option>
+                                <option value="Zahnarzt Kieferorthopädie">Zahnarzt Kieferorthopädie</option>
+                                <option value="Kieferchirurg">Kieferchirurg</option>
+                                <option value="Zahnarzt Implantologie">Zahnarzt Implantologie</option>
+                                <option value="Zahnarzt Parodontologie">Zahnarzt Parodontologie</option>
+                                <option value="Zahnarzt Prothetik">Zahnarzt Prothetik</option>
+                                <option value="Endodontologe">Endodontologe</option>
+                            </optgroup>
+                            <optgroup label="Fachärzte">
+                                <option value="Kardiologe">Kardiologe</option>
+                                <option value="Augenarzt / Ophthalmologe">Augenarzt / Ophthalmologe</option>
+                                <option value="HNO-Arzt / Otolaryngologe">HNO-Arzt / Otolaryngologe</option>
+                                <option value="Orthopäde">Orthopäde</option>
+                                <option value="Dermatologe / Hautarzt">Dermatologe / Hautarzt</option>
+                                <option value="Neurologe">Neurologe</option>
+                                <option value="Psychiater">Psychiater</option>
+                                <option value="Psychotherapeut">Psychotherapeut</option>
+                                <option value="Urolog">Urolog</option>
+                                <option value="Gynäkologe">Gynäkologe</option>
+                                <option value="Chirurg">Chirurg</option>
+                                <option value="Anästhesist">Anästhesist</option>
+                                <option value="Patholog">Patholog</option>
+                                <option value="Radiologe">Radiologe</option>
+                                <option value="Gastroenterolog">Gastroenterolog</option>
+                                <option value="Hepatolog">Hepatolog</option>
+                                <option value="Pneumolog / Lungenfacharzt">Pneumolog / Lungenfacharzt</option>
+                                <option value="Nepholog / Nierenfacharzt">Nepholog / Nierenfacharzt</option>
+                                <option value="Endokrinolog">Endokrinolog</option>
+                                <option value="Rheumatolog">Rheumatolog</option>
+                                <option value="Allergolog / Immunolog">Allergolog / Immunolog</option>
+                                <option value="Onkolog">Onkolog</option>
+                                <option value="Hämatolog">Hämatolog</option>
+                                <option value="Sportmediziner">Sportmediziner</option>
+                                <option value="Geriatrie / Altersmedizin">Geriatrie / Altersmedizin</option>
+                            </optgroup>
+                            <optgroup label="Therapie & Rehabilitation">
+                                <option value="Physiotherapeut">Physiotherapeut</option>
+                                <option value="Ergotherapeut">Ergotherapeut</option>
+                                <option value="Logopäde">Logopäde</option>
+                                <option value="Psychologe">Psychologe</option>
+                                <option value="Klinischer Psychologe">Klinischer Psychologe</option>
+                            </optgroup>
+                            <optgroup label="Medizinische Versorgung">
+                                <option value="Apotheke">Apotheke</option>
+                                <option value="Krankenhaus">Krankenhaus</option>
+                                <option value="Klinik">Klinik</option>
+                                <option value="Labormediziner">Labormediziner</option>
+                                <option value="Transfusionsmediziner">Transfusionsmediziner</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="custom-type-input" id="customTypeDiv">
+                        <label for="customType">Bitte geben Sie den Arzttyp ein:</label>
+                        <input type="text" id="customType" placeholder="z.B. Spezialist für XYZ">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactAddress">Adresse (optional)</label>
+                        <input type="text" id="contactAddress" name="contactAddress" placeholder="Straße, PLZ, Stadt">
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-add">➕ Kontakt hinzufügen</button>
+                        <button type="reset" class="btn-reset">Löschen</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- LISTE: ALLE KONTAKTE -->
+            <div class="section">
+                <h2>📋 Kontakte (<span id="contactCount">0</span>)</h2>
+                
+                <!-- FILTER SEKTION -->
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <label for="filterName">🔍 Nach Name suchen</label>
+                        <input type="text" id="filterName" placeholder="z.B. Schmidt, Dr. Meyer...">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterType">🏷️ Nach Typ filtern</label>
+                        <select id="filterType">
+                            <option value="">-- Alle Typen --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-results" id="filterResults" style="display: none;"></div>
+
+                <div class="contacts-list" id="contactsList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🏥</div>
+                        <p>Noch keine Kontakte erfasst</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        // =========================================================================
+        // KONTAKT-VERWALTUNG - REST API
+        // =========================================================================
+
+        let contacts = [];
+        let editingId = null;
+        let filterName = '';
+        let filterType = '';
+
+        // =========================================================================
+        // TYP-FILTER INITIALISIEREN
+        // =========================================================================
+        function initializeTypeFilter() {
+            const types = [...new Set(contacts.map(c => c.specialty || c.type).filter(t => t))].sort();
+            const select = document.getElementById('filterType');
+            
+            // Alle Optionen außer der ersten löschen
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            types.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                select.appendChild(option);
+            });
+        }
+
+        // =========================================================================
+        // FILTER EVENT LISTENER
+        // =========================================================================
+        document.getElementById('filterName').addEventListener('input', function() {
+            filterName = this.value.toLowerCase().trim();
+            applyFilters();
+        });
+
+        document.getElementById('filterType').addEventListener('change', function() {
+            filterType = this.value;
+            applyFilters();
+        });
+
+        // =========================================================================
+        // FILTER ANWENDEN
+        // =========================================================================
+        function applyFilters() {
+            const filtered = contacts.filter(contact => {
+                const nameMatch = contact.name.toLowerCase().includes(filterName);
+                const contactType = contact.specialty || contact.type;
+                const typeMatch = !filterType || contactType === filterType;
+                return nameMatch && typeMatch;
+            });
+
+            renderFilteredContacts(filtered);
+            updateFilterResults(filtered);
+        }
+
+        // =========================================================================
+        // FILTER-ERGEBNIS ANZEIGEN
+        // =========================================================================
+        function updateFilterResults(filtered) {
+            const resultsDiv = document.getElementById('filterResults');
+            
+            if (filterName || filterType) {
+                resultsDiv.style.display = 'block';
+                resultsDiv.textContent = `🔎 ${filtered.length} von ${contacts.length} Kontakt(en) gefunden`;
+            } else {
+                resultsDiv.style.display = 'none';
+            }
+        }
+
+        // =========================================================================
+        // CUSTOM TYPE TOGGLE
+        // =========================================================================
+        document.getElementById('contactType').addEventListener('change', function() {
+            const customDiv = document.getElementById('customTypeDiv');
+            if (this.value === 'Sonstiges') {
+                customDiv.classList.add('active');
+                document.getElementById('customType').focus();
+            } else {
+                customDiv.classList.remove('active');
+                document.getElementById('customType').value = '';
+            }
+        });
+
+        // =========================================================================
+        // FORMULAR SUBMIT
+        // =========================================================================
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('contactName').value.trim();
+            let type = document.getElementById('contactType').value.trim();
+            const address = document.getElementById('contactAddress').value.trim();
+
+            // Wenn "Sonstiges" ausgewählt, verwende benutzerdefinierte Eingabe
+            if (type === 'Sonstiges') {
+                const customType = document.getElementById('customType').value.trim();
+                if (!customType) {
+                    alert('⚠ Bitte geben Sie einen Arzttyp ein!');
+                    return;
+                }
+                type = customType;
+            }
+
+            if (!name || !type) {
+                alert('⚠ Name und Typ sind erforderlich!');
+                return;
+            }
+
+            try {
+                if (editingId) {
+                    await API.contacts.update(editingId, { name, specialty: type, address });
+                    editingId = null;
+                    document.querySelector('.btn-add').textContent = '➕ Kontakt hinzufügen';
+                } else {
+                    await API.contacts.create({ name, specialty: type, address });
+                }
+                await loadAndRender();
+                this.reset();
+                document.getElementById('customTypeDiv').classList.remove('active');
+            } catch (err) {
+                alert('Fehler beim Speichern: ' + err.message);
+            }
+        });
+
+        // =========================================================================
+        // GEFILTERTE KONTAKTLISTE RENDERN
+        // =========================================================================
+        function renderFilteredContacts(filtered) {
+            const list = document.getElementById('contactsList');
+
+            if (filtered.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <p>Keine Kontakte gefunden</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = filtered
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map(contact => `
+                    <div class="contact-card">
+                        <div class="contact-info">
+                            <div class="contact-name">${contact.name}</div>
+                            <div class="contact-type">
+                                <span class="type-badge">${contact.specialty || contact.type || ''}</span>
+                            </div>
+                            ${contact.address ? `<div class="contact-address">📍 ${contact.address}</div>` : ''}
+                        </div>
+                        <div class="contact-actions">
+                            <button class="btn-edit" onclick="editContact('${contact.id}')">✏️ Bearbeiten</button>
+                            <button class="btn-delete" onclick="deleteContact('${contact.id}')">🗑️ Löschen</button>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        // =========================================================================
+        // KONTAKTLISTE LADEN & RENDERN
+        // =========================================================================
+        async function loadAndRender() {
+            contacts = await API.contacts.getAll();
+            renderContacts();
+        }
+
+        function renderContacts() {
+            const list = document.getElementById('contactsList');
+            document.getElementById('contactCount').textContent = contacts.length;
+
+            if (contacts.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🏥</div>
+                        <p>Noch keine Kontakte erfasst</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Typ-Filter initialisieren und alle Kontakte anzeigen
+            initializeTypeFilter();
+            renderFilteredContacts(contacts);
+        }
+
+        // =========================================================================
+        // KONTAKT BEARBEITEN
+        // =========================================================================
+        function editContact(id) {
+            const contact = contacts.find(c => c.id === id);
+            if (contact) {
+                document.getElementById('contactName').value = contact.name;
+                const type = contact.specialty || contact.type || '';
+                document.getElementById('contactAddress').value = contact.address || '';
+                const select = document.getElementById('contactType');
+                if (select.querySelector(`option[value="${type}"]`)) {
+                    select.value = type;
+                } else {
+                    select.value = 'Sonstiges';
+                    document.getElementById('customType').value = type;
+                    document.getElementById('customTypeDiv').classList.add('active');
+                }
+                editingId = id;
+                document.querySelector('.btn-add').textContent = '💾 Kontakt speichern';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // =========================================================================
+        // KONTAKT LÖSCHEN
+        // =========================================================================
+        async function deleteContact(id) {
+            const contact = contacts.find(c => c.id === id);
+            if (confirm(`Soll der Kontakt "${contact.name}" wirklich gelöscht werden?`)) {
+                try {
+                    await API.contacts.delete(id);
+                    await loadAndRender();
+                } catch (err) {
+                    alert('❌ ' + err.message);
+                }
+            }
+        }
+
+        // Initiale Render
+        loadAndRender();
+    </script>
+</body>
+</html>

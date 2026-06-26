@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patienten verwalten - Beihilfe-Planer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .section {
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .quote-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .quote-display {
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-weight: 600;
+            color: #667eea;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .quote-display.error {
+            color: #d32f2f;
+            background: #ffebee;
+        }
+
+        .quote-display.success {
+            color: #2e7d32;
+            background: #e8f5e9;
+        }
+
+        .quote-note {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-add {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-add:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+            flex: 1;
+        }
+
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-delete {
+            background: #d32f2f;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-delete:hover {
+            background: #b71c1c;
+        }
+
+        .btn-edit {
+            background: #ffa726;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .btn-edit:hover {
+            background: #fb8c00;
+        }
+
+        .patients-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .patient-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .patient-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .patient-info {
+            flex: 1;
+        }
+
+        .patient-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .patient-quotes {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .quote-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+            font-weight: 500;
+        }
+
+        .patient-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .patient-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .patient-actions {
+                align-self: flex-end;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="home-button">🏠 Startseite</a>
+
+    <div class="container">
+        <div class="header">
+            <h1>👥 Patienten verwalten</h1>
+            <p>Fügen Sie Patienten hinzu und verwalten Sie ihre Kostenverteilungsquoten</p>
+            <div style="margin-top: 15px;">
+                <a href="form_aufwendungen_status.html" style="color: white; text-decoration: none; font-weight: 500; font-size: 14px; padding: 8px 16px; background: rgba(255, 255, 255, 0.2); border-radius: 4px; transition: background 0.3s; display: inline-block;">← Zur Belegerfassung</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- FORMULAR: NEUEN PATIENTEN HINZUFÜGEN -->
+            <div class="section">
+                <h2>➕ Neuer Patient</h2>
+                <form id="patientForm">
+                    <div class="form-group">
+                        <label for="firstName">Vorname *</label>
+                        <input type="text" id="firstName" name="firstName" placeholder="z.B. Max" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Nachname *</label>
+                        <input type="text" id="lastName" name="lastName" placeholder="z.B. Mustermann" required>
+                    </div>
+
+                    <div style="margin-bottom: 15px; padding: 12px; background: #e3f2fd; border-radius: 6px; border-left: 4px solid #1976d2;">
+                        <p style="font-size: 13px; color: #1565c0; font-weight: 500; margin: 0;">
+                            💡 Tipp: Füllen Sie nur <strong>ein Feld</strong> aus. Das andere wird automatisch berechnet.<br>
+                            Beispiel: PKV 50% → Beihilfe wird automatisch 50%
+                        </p>
+                    </div>
+
+                    <div class="quote-row">
+                        <div class="form-group">
+                            <label for="pkvQuote">PKV-Quote (%)</label>
+                            <input type="number" id="pkvQuote" name="pkvQuote" min="0" max="100" step="0.1" placeholder="Oder dieses Feld ausfüllen..." value="">
+                            <span id="pkvDisplay" style="font-size: 12px; color: #999; margin-top: 3px;"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="beihilfeQuote">Beihilfe-Quote (%)</label>
+                            <input type="number" id="beihilfeQuote" name="beihilfeQuote" min="0" max="100" step="0.1" placeholder="Oder dieses Feld ausfüllen..." value="">
+                            <span id="beihilfeDisplay" style="font-size: 12px; color: #999; margin-top: 3px;"></span>
+                        </div>
+                    </div>
+
+                    <div class="quote-display" id="quoteSum">
+                        Summe: <span id="quoteSumValue">0</span>%
+                    </div>
+                    <div class="quote-note" id="quoteNote">⏳ Bitte füllen Sie ein Feld aus...</div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-add">➕ Patient hinzufügen</button>
+                        <button type="reset" class="btn-reset">Löschen</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- LISTE: ALLE PATIENTEN -->
+            <div class="section">
+                <h2>📋 Patienten (<span id="patientCount">0</span>)</h2>
+                <div class="patients-list" id="patientsList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👤</div>
+                        <p>Noch keine Patienten erfasst</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        // =========================================================================
+        // PATIENTEN-VERWALTUNG - REST API
+        // =========================================================================
+
+        let patients = [];
+        let editingId = null;
+
+        // =========================================================================
+        // QUOTE-VALIDIERUNG UND AUTO-BERECHNUNG IN ECHTZEIT
+        // =========================================================================
+        let lastEditedField = null; // Verfolgt welches Feld zuletzt geändert wurde
+
+        document.getElementById('pkvQuote').addEventListener('input', function() {
+            lastEditedField = 'pkv';
+            const pkvValue = this.value.trim();
+            
+            if (pkvValue === '') {
+                // Feld geleert - Beihilfe auch löschen
+                document.getElementById('beihilfeQuote').value = '';
+                updateQuoteSum();
+                return;
+            }
+
+            let pkv = parseFloat(pkvValue);
+
+            // Validierung: nur Zahlen zwischen 0-100
+            if (isNaN(pkv) || pkv < 0 || pkv > 100) {
+                this.value = '';
+                updateQuoteSum();
+                return;
+            }
+
+            // Beihilfe automatisch berechnen
+            const beihilfe = 100 - pkv;
+            document.getElementById('beihilfeQuote').value = beihilfe.toFixed(1);
+            updateQuoteSum();
+        });
+
+        document.getElementById('beihilfeQuote').addEventListener('input', function() {
+            lastEditedField = 'beihilfe';
+            const beihilfeValue = this.value.trim();
+            
+            if (beihilfeValue === '') {
+                // Feld geleert - PKV auch löschen
+                document.getElementById('pkvQuote').value = '';
+                updateQuoteSum();
+                return;
+            }
+
+            let beihilfe = parseFloat(beihilfeValue);
+
+            // Validierung: nur Zahlen zwischen 0-100
+            if (isNaN(beihilfe) || beihilfe < 0 || beihilfe > 100) {
+                this.value = '';
+                updateQuoteSum();
+                return;
+            }
+
+            // PKV automatisch berechnen
+            const pkv = 100 - beihilfe;
+            document.getElementById('pkvQuote').value = pkv.toFixed(1);
+            updateQuoteSum();
+        });
+
+        function updateQuoteSum() {
+            const pkvInput = document.getElementById('pkvQuote');
+            const beihilfeInput = document.getElementById('beihilfeQuote');
+            const pkvValue = pkvInput.value.trim();
+            const beihilfeValue = beihilfeInput.value.trim();
+
+            let pkv = pkvValue ? parseFloat(pkvValue) : null;
+            let beihilfe = beihilfeValue ? parseFloat(beihilfeValue) : null;
+
+            // Wenn beide leer
+            if (pkv === null && beihilfe === null) {
+                document.getElementById('quoteSumValue').textContent = '0';
+                document.getElementById('quoteSum').className = 'quote-display';
+                document.getElementById('quoteNote').textContent = '⏳ Bitte füllen Sie ein Feld aus...';
+                document.getElementById('pkvDisplay').textContent = '';
+                document.getElementById('beihilfeDisplay').textContent = '';
+                return;
+            }
+
+            let sum = (pkv || 0) + (beihilfe || 0);
+
+            document.getElementById('quoteSumValue').textContent = sum.toFixed(1);
+            document.getElementById('pkvDisplay').textContent = pkv !== null ? `= ${pkv.toFixed(1)}%` : '';
+            document.getElementById('beihilfeDisplay').textContent = beihilfe !== null ? `= ${beihilfe.toFixed(1)}%` : '';
+
+            const quoteDisplay = document.getElementById('quoteSum');
+            const quoteNote = document.getElementById('quoteNote');
+
+            if (Math.abs(sum - 100) < 0.1) {
+                quoteDisplay.className = 'quote-display success';
+                quoteNote.textContent = '✓ PKV + Beihilfe = 100% (korrekt)';
+            } else {
+                quoteDisplay.className = 'quote-display error';
+                quoteNote.textContent = `⚠ Summe nicht 100%: ${sum.toFixed(1)}%`;
+            }
+        }
+
+        // =========================================================================
+        // FORMULAR SUBMIT
+        // =========================================================================
+        document.getElementById('patientForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const pkvInput = document.getElementById('pkvQuote').value.trim();
+            const beihilfeInput = document.getElementById('beihilfeQuote').value.trim();
+
+            // Validierung: mindestens ein Quote-Feld muss gefüllt sein
+            if (!pkvInput && !beihilfeInput) {
+                alert('⚠ Bitte füllen Sie mindestens die PKV-Quote oder Beihilfe-Quote aus!');
+                return;
+            }
+
+            if (!firstName || !lastName) {
+                alert('⚠ Vorname und Nachname erforderlich!');
+                return;
+            }
+
+            // Quoten auslesen (eines ist berechnet)
+            let pkvQuote = pkvInput ? parseFloat(pkvInput) : (100 - parseFloat(beihilfeInput));
+            let beihilfeQuote = beihilfeInput ? parseFloat(beihilfeInput) : (100 - parseFloat(pkvInput));
+
+            // Endvalidierung: Summe muss 100 sein
+            const sum = pkvQuote + beihilfeQuote;
+            if (Math.abs(sum - 100) > 0.1) {
+                alert('⚠ PKV-Quote + Beihilfe-Quote muss 100% ergeben!');
+                return;
+            }
+
+            try {
+                if (editingId) {
+                    await API.patients.update(editingId, { firstName, lastName, pkvQuote, beihilfeQuote });
+                    editingId = null;
+                    document.querySelector('.btn-add').textContent = '➕ Patient hinzufügen';
+                } else {
+                    await API.patients.create({ firstName, lastName, pkvQuote, beihilfeQuote });
+                }
+                await loadAndRender();
+                this.reset();
+                document.getElementById('pkvQuote').value = '';
+                document.getElementById('beihilfeQuote').value = '';
+                updateQuoteSum();
+            } catch (err) {
+                alert('Fehler beim Speichern: ' + err.message);
+            }
+        });
+
+        // =========================================================================
+        // PATIENTENLISTE RENDERN
+        // =========================================================================
+        async function loadAndRender() {
+            patients = await API.patients.getAll();
+            renderPatients();
+        }
+
+        function renderPatients() {
+            const list = document.getElementById('patientsList');
+            document.getElementById('patientCount').textContent = patients.length;
+
+            if (patients.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👤</div>
+                        <p>Noch keine Patienten erfasst</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = patients
+                .sort((a, b) => `${a.lastName} ${a.firstName}`.localeCompare(`${b.lastName} ${b.firstName}`))
+                .map(patient => `
+                    <div class="patient-card">
+                        <div class="patient-info">
+                            <div class="patient-name">${patient.firstName} ${patient.lastName}</div>
+                            <div class="patient-quotes">
+                                <span class="quote-badge">PKV: ${patient.pkvQuote}%</span>
+                                <span class="quote-badge">Beihilfe: ${patient.beihilfeQuote}%</span>
+                            </div>
+                        </div>
+                        <div class="patient-actions">
+                            <button class="btn-edit" onclick="editPatient('${patient.id}')">✏️ Bearbeiten</button>
+                            <button class="btn-delete" onclick="deletePatient('${patient.id}')">🗑️ Löschen</button>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        // =========================================================================
+        // PATIENT BEARBEITEN
+        // =========================================================================
+        function editPatient(id) {
+            const patient = patients.find(p => p.id === id);
+            if (patient) {
+                document.getElementById('firstName').value = patient.firstName;
+                document.getElementById('lastName').value = patient.lastName;
+                document.getElementById('pkvQuote').value = patient.pkvQuote;
+                document.getElementById('beihilfeQuote').value = patient.beihilfeQuote;
+                updateQuoteSum();
+                editingId = id;
+                document.querySelector('.btn-add').textContent = '💾 Patient speichern';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // =========================================================================
+        // PATIENT LÖSCHEN
+        // =========================================================================
+        async function deletePatient(id) {
+            const patient = patients.find(p => p.id === id);
+            
+            try {
+                // Prüfe ob Aufwendungen existieren
+                const { hasAufwendungen } = await API.patients.hasAufwendungen(id);
+                
+                if (hasAufwendungen) {
+                    const message = `Warnung: Dieser Patient hat ${hasAufwendungen ? 'verknüpfte Belege' : 'Belege'}.\n\nWenn Sie den Patienten löschen, werden auch alle zugehörigen Belege gelöscht.\n\nFortfahren?`;
+                    if (!confirm(message)) {
+                        return;
+                    }
+                } else {
+                    if (!confirm(`Soll der Patient "${patient.firstName} ${patient.lastName}" wirklich gelöscht werden?`)) {
+                        return;
+                    }
+                }
+                
+                await API.patients.delete(id);
+                await loadAndRender();
+            } catch (err) {
+                alert('Fehler beim Löschen: ' + err.message);
+            }
+        }
+
+        // Initiale Render
+        loadAndRender();
+        updateQuoteSum();
+    </script>
+</body>
+</html>

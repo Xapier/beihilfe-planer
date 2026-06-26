@@ -1,0 +1,115 @@
+-- =============================================================================
+-- MODUL: Finanzielle Auswertungen & Reporting
+-- =============================================================================
+
+BEGIN TRANSACTION;
+
+CREATE TABLE IF NOT EXISTS "tbl_Beitraege" (
+	"BB_ID"	INTEGER NOT NULL,
+	"BB_Monat"	INTEGER DEFAULT 0,
+	"BB_Jahr"	INTEGER DEFAULT 0,
+	"BB_Patient"	VARCHAR(30),
+	"BB_Beitrag"	MONEY DEFAULT 0,
+	"BB_Bre"	MONEY DEFAULT 0,
+	"BB_Bem"	VARCHAR(30),
+	CONSTRAINT "BB_ID" PRIMARY KEY("BB_ID" AUTOINCREMENT)
+);
+
+CREATE TABLE IF NOT EXISTS "tbl_BRE" (
+	"BRE_ID"	INTEGER,
+	"Re_ID"	INTEGER DEFAULT 0,
+	"BRE_ReAussteller"	TEXT,
+	"BRE_Person"	TEXT,
+	"BRE_ReMassnahme"	TEXT,
+	"BRE_ReDatum"	DateTime,
+	"BRE_Prozent"	INTEGER DEFAULT 0,
+	"BRE_ReBetrag"	REAL DEFAULT 0,
+	"BRE_Abzug"	REAL DEFAULT 0,
+	"BRE_Zaehler"	REAL DEFAULT 0,
+	"BRE_Jahr"	INTEGER DEFAULT 0,
+	"BRE_Status"	TEXT,
+	"SuchMarke"	TEXT,
+	PRIMARY KEY("BRE_ID" AUTOINCREMENT)
+);
+
+CREATE TABLE IF NOT EXISTS "tbl_PlusMinus" (
+	"PM_ID"	INTEGER NOT NULL,
+	"PM_Tag"	DATETIME,
+	"PM_Patient"	VARCHAR(30),
+	"PM_Kategorie"	VARCHAR(30),
+	"PM_Bem"	VARCHAR(200),
+	"PM_Plus"	MONEY DEFAULT 0,
+	"PM_Minus"	MONEY DEFAULT 0,
+	"PM_BezugID"	INTEGER DEFAULT 0,
+	"SuchMarke"	VARCHAR(1),
+	CONSTRAINT "PM_ID" PRIMARY KEY("PM_ID" AUTOINCREMENT)
+);
+
+CREATE TABLE IF NOT EXISTS "tbl_Ratenzahlung" (
+	"Rz_ID"	INTEGER NOT NULL,
+	"Re_ID"	INTEGER DEFAULT 0,
+	"Rz_Datum"	DATETIME,
+	"Rz_Rate"	MONEY DEFAULT 0,
+	"Rz_Bem"	VARCHAR(80),
+	"Alt_Re_ID"	INTEGER DEFAULT 0,
+	"SuchMarke"	VARCHAR(1),
+	CONSTRAINT "Rz_ID" PRIMARY KEY("Rz_ID" AUTOINCREMENT)
+);
+
+CREATE TABLE IF NOT EXISTS "tbl_Monat_RepDaten" (
+	"MonatsZahl"	INTEGER DEFAULT 0,
+	"JahresZahl"	INTEGER DEFAULT 0,
+	"MonatsName"	VARCHAR(20),
+	"RechBetrag"	MONEY DEFAULT 0,
+	"GesPKV_Grund"	MONEY DEFAULT 0,
+	"GesPKV_Direkt"	MONEY DEFAULT 0,
+	"GesPKV_BET"	MONEY DEFAULT 0,
+	"GesPKV_Erstatt"	MONEY DEFAULT 0,
+	"GesBH_Erstatt"	MONEY DEFAULT 0,
+	"GesSE"	MONEY DEFAULT 0,
+	"GesSK"	MONEY DEFAULT 0,
+	"GesBeitrag"	MONEY DEFAULT 0,
+	"GesBRE"	MONEY DEFAULT 0,
+	"GesPv_Grund"	MONEY DEFAULT 0,
+	"GesPv_Direkt"	MONEY DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS "tbl_Monat_RepBasis" (
+	"MonatsZahl"	VARCHAR(2),
+	"JahresZahl"	INTEGER DEFAULT 0,
+	"MonatsName"	VARCHAR(20),
+	"RechBetrag"	MONEY DEFAULT 0,
+	"GesPKV_Grund"	MONEY DEFAULT 0,
+	"GesPKV_Direkt"	MONEY DEFAULT 0,
+	"GesPKV_BET"	MONEY DEFAULT 0,
+	"GesPKV_Erstatt"	MONEY DEFAULT 0,
+	"GesBH_Erstatt"	MONEY DEFAULT 0,
+	"GesSE"	MONEY DEFAULT 0,
+	"GesSK"	MONEY DEFAULT 0,
+	"GesBeitrag"	MONEY DEFAULT 0,
+	"GesBRE"	MONEY DEFAULT 0,
+	"GesPv_Grund"	MONEY DEFAULT 0,
+	"GesPv_Direkt"	MONEY DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS "tbl_Monat_RepAnsicht" (
+	"XX_ID"	INTEGER NOT NULL,
+	"MonatsZahl"	VARCHAR(2),
+	"JahresZahl"	INTEGER DEFAULT 0,
+	"MonatsName"	VARCHAR(20),
+	"RechBetrag"	MONEY DEFAULT 0,
+	"GesPKV_Grund"	MONEY DEFAULT 0,
+	"GesPKV_Direkt"	MONEY DEFAULT 0,
+	"GesPKV_BET"	MONEY DEFAULT 0,
+	"GesPKV_Erstatt"	MONEY DEFAULT 0,
+	"GesBH_Erstatt"	MONEY DEFAULT 0,
+	"GesSE"	MONEY DEFAULT 0,
+	"GesSK"	MONEY DEFAULT 0,
+	"GesBeitrag"	MONEY DEFAULT 0,
+	"GesBRE"	MONEY DEFAULT 0,
+	"GesPv_Grund"	MONEY DEFAULT 0,
+	"GesPv_Direkt"	MONEY DEFAULT 0,
+	CONSTRAINT "XX_ID" PRIMARY KEY("XX_ID" AUTOINCREMENT)
+);
+
+COMMIT;

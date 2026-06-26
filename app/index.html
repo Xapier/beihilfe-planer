@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beihilfe-Planer - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar h1 { font-size: 24px; }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-box .number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-box .label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links { flex-direction: column; gap: 10px; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>📋 Beihilfe-Planer</h1>
+        <ul class="nav-links">
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="form_aufwendungen_status.html">Aufwendungen</a></li>
+            <li><a href="patients.html">Patienten</a></li>
+            <li><a href="contacts.html">Kontakte</a></li>
+            <li><a href="reports.html">Berichte</a></li>
+        </ul>
+    </div>
+    
+    <div class="container">
+        <h2 style="margin-bottom: 20px; color: #333;">Willkommen 👋</h2>
+        
+        <!-- STATISTIKEN -->
+        <div class="stats">
+            <div class="stat-box">
+                <div class="number" id="statPatienten">0</div>
+                <div class="label">Patienten</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="statAufwendungen">0</div>
+                <div class="label">Aufwendungen</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="statGesamtbetrag">€0,00</div>
+                <div class="label">Gesamtbetrag</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="statAusstehend">€0,00</div>
+                <div class="label">Ausstehend</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="statEigenbehaltOffen">€0,00</div>
+                <div class="label">Eigenbehalt</div>
+            </div>
+        </div>
+        
+        <!-- FUNKTIONEN -->
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">📋</div>
+                <h3>Aufwendungen erfassen</h3>
+                <p>Erfassen Sie neue medizinische Aufwendungen mit vollständigem Bearbeitungsstatus</p>
+                <a href="form_aufwendungen_status.html" class="btn">Zur Erfassung →</a>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">👥</div>
+                <h3>Patienten verwalten</h3>
+                <p>Verwandte und Familienangehörige mit individuellen Beihilfesätzen erfassen</p>
+                <a href="patients.html" class="btn">Verwalten →</a>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">🏥</div>
+                <h3>Kontakte verwalten</h3>
+                <p>Ärzte, Zahnärzte, Kliniken und Apotheken als Ansprechpartner speichern</p>
+                <a href="contacts.html" class="btn">Verwalten →</a>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">📊</div>
+                <h3>Berichte & Auswertungen</h3>
+                <p>Übersichten und Statistiken zu Kosten, Erstattungen und Bearbeitungszeiten</p>
+                <a href="reports.html" class="btn">Ansehen →</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        // =========================================================================
+        // DASHBOARD STATISTIKEN BERECHNEN
+        // =========================================================================
+        async function updateDashboardStats() {
+            const [patients, aufwendungen] = await Promise.all([
+                API.patients.getAll(),
+                API.aufwendungen.getAll()
+            ]);
+
+            // Anzahl Patienten
+            document.getElementById('statPatienten').textContent = patients.length;
+
+            // Anzahl Aufwendungen
+            document.getElementById('statAufwendungen').textContent = aufwendungen.length;
+
+            // Gesamtbetrag berechnen
+            const gesamtbetrag = aufwendungen.reduce((sum, auf) => sum + (auf.betrag || 0), 0);
+            document.getElementById('statGesamtbetrag').textContent = `€${gesamtbetrag.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            // Ausstehenden Betrag berechnen (nur von Aufwendungen mit noch offenen Kostenträger-Status)
+            // Ausstehend = Eigenbehalt von Aufwendungen, bei denen mindestens ein Kostenträger noch nicht "erledigt" oder "nicht-noetig" ist
+            const gesamtAusstehend = aufwendungen
+                .filter(auf => {
+                    // Prüfe ob mindestens ein Kostenträger noch bearbeitet wird
+                    const pkvPending = auf.status.pkv !== 'erledigt' && auf.status.pkv !== 'nicht-noetig';
+                    const pflegePending = auf.status.pflege !== 'erledigt' && auf.status.pflege !== 'nicht-noetig';
+                    const beihilfePending = auf.status.beihilfe !== 'erledigt' && auf.status.beihilfe !== 'nicht-noetig';
+                    const betPending = auf.status.bet !== 'erledigt' && auf.status.bet !== 'nicht-noetig';
+                    
+                    return pkvPending || pflegePending || beihilfePending || betPending;
+                })
+                .reduce((sum, auf) => {
+                    const summeZahlungen = (auf.betraege?.pkv || 0) + (auf.betraege?.beihilfe || 0) + (auf.betraege?.bet || 0) + (auf.betraege?.pflege || 0);
+                    return sum + Math.max(0, auf.betrag - summeZahlungen);
+                }, 0);
+            document.getElementById('statAusstehend').textContent = `€${gesamtAusstehend.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            // Offene Eigenbehalte berechnen (nur von nicht-erledigten Aufwendungen)
+            // Eine Aufwendung ist erledigt, wenn ALLE ihre Status "erledigt" sind
+            const offeneEigenbehalt = aufwendungen
+                .filter(auf => {
+                    // Prüfe ob mindestens ein Status NICHT "erledigt" ist
+                    const nichtErledigt = 
+                        auf.status.rechnung !== 'erledigt' ||
+                        auf.status.pkv !== 'erledigt' ||
+                        auf.status.bet !== 'erledigt' ||
+                        auf.status.beihilfe !== 'erledigt' ||
+                        auf.status.pflege !== 'erledigt';
+                    return nichtErledigt;
+                })
+                .reduce((sum, auf) => {
+                    const summeZahlungen = (auf.betraege?.pkv || 0) + (auf.betraege?.beihilfe || 0) + (auf.betraege?.bet || 0) + (auf.betraege?.pflege || 0);
+                    return sum + Math.max(0, auf.betrag - summeZahlungen);
+                }, 0);
+            document.getElementById('statEigenbehaltOffen').textContent = `€${offeneEigenbehalt.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        // Statistiken beim Laden berechnen
+        document.addEventListener('DOMContentLoaded', updateDashboardStats);
+    </script>

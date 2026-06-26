@@ -1,0 +1,42 @@
+-- =============================================================================
+-- MODUL: Konfiguration & Lookup
+-- =============================================================================
+
+BEGIN TRANSACTION;
+
+CREATE TABLE IF NOT EXISTS "tbl_DLC" (
+	"L_ID"	INTEGER NOT NULL,
+	"LCode"	VARCHAR(30) NOT NULL,
+	CONSTRAINT "L_ID" PRIMARY KEY("L_ID" AUTOINCREMENT)
+);
+
+CREATE TABLE IF NOT EXISTS "tbl_PersAuswahl" (
+	"Pa_ID"	INTEGER NOT NULL,
+	"Pa_Person"	VARCHAR(25),
+	"Pa_PKV"	INTEGER DEFAULT 0,
+	"Pa_BH"	INTEGER DEFAULT 0,
+	CONSTRAINT "Pa_ID" PRIMARY KEY("Pa_ID" AUTOINCREMENT)
+);
+
+CREATE TABLE IF NOT EXISTS "tbl_Sicht" (
+	"cb_ID"	INTEGER,
+	"cb_Txt"	TEXT,
+	"cb1"	INTEGER DEFAULT 0,
+	"cb2"	INTEGER DEFAULT 0,
+	"cb3"	INTEGER DEFAULT 0,
+	"cb4"	INTEGER DEFAULT 0,
+	"cb5"	INTEGER DEFAULT 0,
+	"cb6"	INTEGER DEFAULT 0,
+	"cb7"	INTEGER DEFAULT 0,
+	"cb8"	INTEGER DEFAULT 0,
+	"cb9"	INTEGER DEFAULT 0,
+	"cb10"	INTEGER DEFAULT 0,
+	"cb11"	INTEGER DEFAULT 0,
+	"cb13"	INTEGER DEFAULT 0,
+	"cb12"	INTEGER DEFAULT 0,
+	"cb14"	INTEGER DEFAULT 0,
+	"cb15"	INTEGER DEFAULT 0,
+	PRIMARY KEY("cb_ID" AUTOINCREMENT)
+);
+
+COMMIT;
