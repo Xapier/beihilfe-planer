@@ -676,6 +676,13 @@
                 </div>
             </div>
 
+            <!-- AUFTEILUNG NACH PATIENT -->
+            <div id="patientBreakdownBox" style="display: none; background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%); border: 1px solid #c6f6d5; border-radius: 8px; padding: 12px 15px; margin-bottom: 15px; font-size: 12px; color: #333;">
+                <div style="font-weight: 600; color: #22543d; margin-bottom: 10px; font-size: 13px;">👥 Aufteilung nach Patient:</div>
+                <div id="patientBreakdownContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px;">
+                </div>
+            </div>
+
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 20px;">
                 <p style="color: #666; font-size: 13px; margin: 0;">Klicken Sie auf eine Zeile um diese zu bearbeiten</p>
                 <div class="legend" style="margin: 0; padding: 0; background: transparent; justify-content: flex-end;">
@@ -1022,8 +1029,8 @@
                 return;
             }
 
-            // Alle Aufwendungen anzeigen
-            renderFilteredTable(aufwendungen);
+            // Filter anwenden statt alle Aufwendungen anzuzeigen
+            applyFilters();
             updateSortIndicators();
         }
 
@@ -1032,7 +1039,6 @@
         // =========================================================================
         function initializeYearFilter() {
             const select = document.getElementById('filterJahr');
-            const currentValue = select.value; // Aktuelle Auswahl speichern
             
             // Nur die erste "-- Alle Jahre --" Option behalten
             while (select.children.length > 1) {
@@ -1048,20 +1054,17 @@
                 select.appendChild(option);
             });
             
-            // Wenn kein Wert gesetzt ist, auf aktuelles Jahr setzen
-            if (!currentValue || !currentValue.toString()) {
-                const currentYear = new Date().getFullYear().toString();
-                filterJahr = currentYear;
-                select.value = currentYear;
-            } else if ([...select.options].some(o => o.value === currentValue)) {
-                // Vorherige Auswahl wiederherstellen, falls immer noch vorhanden
-                select.value = currentValue;
+            // Behalte die aktuelle Filter-Auswahl (filterJahr) bei
+            if (filterJahr && [...select.options].some(o => o.value === filterJahr)) {
+                select.value = filterJahr;
+            } else {
+                select.value = '';
+                filterJahr = '';
             }
         }
 
         function initializePatientFilter() {
             const select = document.getElementById('filterPatient');
-            const currentValue = select.value; // Aktuelle Auswahl speichern
             
             // Nur die erste "-- Alle Patienten --" Option behalten
             while (select.children.length > 1) {
@@ -1077,9 +1080,12 @@
                     select.appendChild(option);
                 });
             
-            // Vorherige Auswahl wiederherstellen, falls immer noch vorhanden
-            if (currentValue && [...select.options].some(o => o.value === currentValue)) {
-                select.value = currentValue;
+            // Behalte die aktuelle Filter-Auswahl (filterPatient) bei
+            if (filterPatient && [...select.options].some(o => o.value === filterPatient)) {
+                select.value = filterPatient;
+            } else {
+                select.value = '';
+                filterPatient = '';
             }
         }
 
@@ -1379,6 +1385,70 @@
             summaryBox.style.display = '';
             document.getElementById('displaySummeBetrag').textContent = `€${summeBetrag.toFixed(2)}`;
             document.getElementById('displaySummeEigenbehalt').textContent = `€${summeEigenbehalt.toFixed(2)}`;
+            
+            // Patient-Aufteilung aktualisieren
+            updatePatientBreakdown(filtered);
+        }
+
+        // =========================================================================
+        // PATIENT-AUFTEILUNG AKTUALISIEREN
+        // =========================================================================
+        function updatePatientBreakdown(filtered) {
+            const breakdown = {};
+            
+            // Summen pro Patient berechnen
+            filtered.forEach(auf => {
+                const patient = patients.find(p => p.id == auf.patientId);
+                if (!patient) return;
+                
+                const patientKey = patient.id;
+                if (!breakdown[patientKey]) {
+                    breakdown[patientKey] = {
+                        id: patient.id,
+                        name: `${patient.lastName}, ${patient.firstName}`,
+                        betrag: 0,
+                        eigenbehalt: 0,
+                        count: 0
+                    };
+                }
+                
+                const betraege = calculateAmounts(patient, auf);
+                const summeZahlungen = betraege.pkvIst + betraege.beihilfeIst + betraege.betIst;
+                const eigenbehalt = Math.max(0, auf.betrag - summeZahlungen);
+                
+                breakdown[patientKey].betrag += auf.betrag;
+                breakdown[patientKey].eigenbehalt += eigenbehalt;
+                breakdown[patientKey].count += 1;
+            });
+            
+            // Sortiere nach Nachname
+            const sortedBreakdown = Object.values(breakdown).sort((a, b) => a.name.localeCompare(b.name));
+            
+            // HTML für Patient-Aufteilung erstellen
+            const content = document.getElementById('patientBreakdownContent');
+            if (sortedBreakdown.length === 0) {
+                document.getElementById('patientBreakdownBox').style.display = 'none';
+                return;
+            }
+            
+            content.innerHTML = sortedBreakdown.map(item => `
+                <div style="background: white; border: 1px solid #cbd5e0; border-radius: 6px; padding: 8px 10px;">
+                    <div style="font-weight: 600; color: #22543d; margin-bottom: 6px;">${item.name}</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px;">
+                        <div>
+                            <span style="color: #718096;">Gesamt:</span>
+                            <div style="font-weight: 600; color: #333;">€${item.betrag.toFixed(2)}</div>
+                        </div>
+                        <div>
+                            <span style="color: #718096;">Eigenbehalt:</span>
+                            <div style="font-weight: 600; color: #333;">€${item.eigenbehalt.toFixed(2)}</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 10px; color: #a0aec0; margin-top: 4px; border-top: 1px solid #e2e8f0; padding-top: 4px;">${item.count} Beleg${item.count !== 1 ? 'e' : ''}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('patientBreakdownBox').style.display = '';
         }
 
         // =========================================================================
