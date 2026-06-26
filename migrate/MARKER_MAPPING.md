@@ -22,8 +22,8 @@ Dokumentation der Marker-Wert-Umwandlung von BOP_SQL_Daten.s3db in das neue Beih
 |----------|--------|----------|-----------|
 | `3` | 97 | **erstattet** | PKV hat die Kosten erstattet |
 | `4` | 25 | **entfällt** | Kostenlose Leistung / Zuzahlung nicht PKV-erstattet |
-| `5` | 14 | **eingereicht** | BRE-Anspruch offen (Beamtenversorgung) |
-| `6` | 25 | **erstattet** | BRE-Anspruch erstattet (Beamtenversorgung) |
+| `5` | 14 | **BRE offen** | Beitragsrückerstattung (BRE) noch offen |
+| `6` | 25 | **BRE erstattet** | Beitragsrückerstattung (BRE) bereits erstattet |
 | *default* | — | **offen** | Sonstige Fälle (kommen nicht vor) |
 
 **Anmerkungen**:
@@ -82,8 +82,8 @@ function mapMarker(marker, col) {
     switch (m) {
       case '3': return 'erstattet';
       case '4': return 'entfällt';
-      case '5': return 'eingereicht';
-      case '6': return 'erstattet';
+      case '5': return 'BRE offen';
+      case '6': return 'BRE erstattet';
       default: return 'offen';
     }
   }

@@ -259,12 +259,12 @@ async function migrateAufwendungen() {
     }
     
     if (col === 'pkv') {
-      // PKV_marker: 3→erstattet, 4→entfällt, 5→eingereicht (BRE offen), 6→erstattet (BRE erstattet)
+      // PKV_marker: 3→erstattet, 4→entfällt, 5→BRE offen, 6→BRE erstattet
       switch (m) {
         case '3': return 'erstattet';
         case '4': return 'entfällt';
-        case '5': return 'eingereicht';
-        case '6': return 'erstattet';
+        case '5': return 'BRE offen';
+        case '6': return 'BRE erstattet';
         default: return 'offen';
       }
     }
