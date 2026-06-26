@@ -137,10 +137,10 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 26px;
-            height: 26px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            font-size: 10px;
+            font-size: 7px;
             font-weight: 700;
             color: white;
             cursor: pointer;
@@ -530,10 +530,10 @@
                     </tr>
                     <tr>
                         <th colspan="8"></th>
-                        <th class="status-col" title="Rechnung">R</th>
-                        <th class="status-col" title="PKV">P</th>
-                        <th class="status-col" title="BET">B</th>
-                        <th class="status-col" title="Beihilfe">H</th>
+                        <th class="status-col" title="Rechnung">Rechn.</th>
+                        <th class="status-col" title="PKV">PKV</th>
+                        <th class="status-col" title="BET">BET</th>
+                        <th class="status-col" title="Beihilfe">Beihilfe</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -1312,22 +1312,22 @@
                             <td class="amount-col" style="color: #e74c3c; font-weight: 600;">${eigenbehalt.toFixed(2)} €</td>
                             <td class="status-col">
                                 <div class="status-cell">
-                                    <div class="status-indicator" data-status="${rechnungStatusDisplay}" title="${rechnungTooltip}">R</div>
+                                    <div class="status-indicator" data-status="${rechnungStatusDisplay}" title="${rechnungTooltip}">Rechn.</div>
                                 </div>
                             </td>
                             <td class="status-col">
                                 <div class="status-cell">
-                                    <div class="status-indicator" data-status="${auf.status.pkv}" title="PKV: ${auf.status.pkv}&#10;Datum: ${auf.daten?.pkv ? new Date(auf.daten.pkv).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${betraege.pkvSoll.toFixed(2)}&#10;Ist: €${betraege.pkvIst.toFixed(2)}&#10;Offen: €${betraege.pkvOffen.toFixed(2)}">P</div>
+                                    <div class="status-indicator" data-status="${auf.status.pkv}" title="PKV: ${auf.status.pkv}&#10;Datum: ${auf.daten?.pkv ? new Date(auf.daten.pkv).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${betraege.pkvSoll.toFixed(2)}&#10;Ist: €${betraege.pkvIst.toFixed(2)}&#10;Offen: €${betraege.pkvOffen.toFixed(2)}">PKV</div>
                                 </div>
                             </td>
                             <td class="status-col">
                                 <div class="status-cell">
-                                    <div class="status-indicator" data-status="${auf.status.bet}" title="BET: ${auf.status.bet}&#10;Datum: ${auf.daten?.bet ? new Date(auf.daten.bet).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${betraege.betSoll.toFixed(2)}&#10;Ist: €${betraege.betIst.toFixed(2)}&#10;Offen: €${betraege.betOffen.toFixed(2)}">B</div>
+                                    <div class="status-indicator" data-status="${auf.status.bet}" title="BET: ${auf.status.bet}&#10;Datum: ${auf.daten?.bet ? new Date(auf.daten.bet).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${betraege.betSoll.toFixed(2)}&#10;Ist: €${betraege.betIst.toFixed(2)}&#10;Offen: €${betraege.betOffen.toFixed(2)}">BET</div>
                                 </div>
                             </td>
                             <td class="status-col">
                                 <div class="status-cell">
-                                    <div class="status-indicator" data-status="${auf.status.beihilfe}" title="Beihilfe: ${auf.status.beihilfe}&#10;Datum: ${auf.daten?.beihilfe ? new Date(auf.daten.beihilfe).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${betraege.beihilfeSoll.toFixed(2)}&#10;Ist: €${betraege.beihilfeIst.toFixed(2)}&#10;Offen: €${betraege.beihilfeOffen.toFixed(2)}">H</div>
+                                    <div class="status-indicator" data-status="${auf.status.beihilfe}" title="Beihilfe: ${auf.status.beihilfe}&#10;Datum: ${auf.daten?.beihilfe ? new Date(auf.daten.beihilfe).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${betraege.beihilfeSoll.toFixed(2)}&#10;Ist: €${betraege.beihilfeIst.toFixed(2)}&#10;Offen: €${betraege.beihilfeOffen.toFixed(2)}">Beihilfe</div>
                                 </div>
                             </td>
                             <td class="actions-col">
