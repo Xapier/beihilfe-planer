@@ -1510,17 +1510,14 @@
             document.querySelector('[name="pkv-status"]').value = auf.status.pkv;
             document.querySelector('[name="bet-status"]').value = auf.status.bet;
             document.querySelector('[name="beihilfe-status"]').value = auf.status.beihilfe;
-            document.querySelector('[name="pflege-status"]').value = auf.status.pflege;
 
             document.querySelector('[name="pkv-betrag"]').value = auf.betraege?.pkv || '';
             document.querySelector('[name="bet-betrag"]').value = auf.betraege?.bet || '';
             document.querySelector('[name="beihilfe-betrag"]').value = auf.betraege?.beihilfe || '';
-            document.querySelector('[name="pflege-betrag"]').value = auf.betraege?.pflege || '';
 
             document.querySelector('[name="pkv-datum"]').value = auf.daten?.pkv || '';
             document.querySelector('[name="bet-datum"]').value = auf.daten?.bet || '';
             document.querySelector('[name="beihilfe-datum"]').value = auf.daten?.beihilfe || '';
-            document.querySelector('[name="pflege-datum"]').value = auf.daten?.pflege || '';
 
             updateCalculations();
 
@@ -1555,7 +1552,6 @@
 
             // Standardwerte für Status
             document.querySelector('[name="bet-status"]').value = 'nicht-noetig';
-            document.querySelector('[name="pflege-status"]').value = 'nicht-noetig';
 
             // Berechnung aktualisieren
             updateCalculations();
