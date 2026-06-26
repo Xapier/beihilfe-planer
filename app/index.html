@@ -234,14 +234,13 @@
                 .filter(auf => {
                     // Prüfe ob mindestens ein Kostenträger noch bearbeitet wird
                     const pkvPending = auf.status.pkv !== 'erledigt' && auf.status.pkv !== 'nicht-noetig';
-                    const pflegePending = auf.status.pflege !== 'erledigt' && auf.status.pflege !== 'nicht-noetig';
                     const beihilfePending = auf.status.beihilfe !== 'erledigt' && auf.status.beihilfe !== 'nicht-noetig';
                     const betPending = auf.status.bet !== 'erledigt' && auf.status.bet !== 'nicht-noetig';
                     
-                    return pkvPending || pflegePending || beihilfePending || betPending;
+                    return pkvPending || beihilfePending || betPending;
                 })
                 .reduce((sum, auf) => {
-                    const summeZahlungen = (auf.betraege?.pkv || 0) + (auf.betraege?.beihilfe || 0) + (auf.betraege?.bet || 0) + (auf.betraege?.pflege || 0);
+                    const summeZahlungen = (auf.betraege?.pkv || 0) + (auf.betraege?.beihilfe || 0) + (auf.betraege?.bet || 0);
                     return sum + Math.max(0, auf.betrag - summeZahlungen);
                 }, 0);
             document.getElementById('statAusstehend').textContent = `€${gesamtAusstehend.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -255,12 +254,11 @@
                         auf.status.rechnung !== 'erledigt' ||
                         auf.status.pkv !== 'erledigt' ||
                         auf.status.bet !== 'erledigt' ||
-                        auf.status.beihilfe !== 'erledigt' ||
-                        auf.status.pflege !== 'erledigt';
+                        auf.status.beihilfe !== 'erledigt';
                     return nichtErledigt;
                 })
                 .reduce((sum, auf) => {
-                    const summeZahlungen = (auf.betraege?.pkv || 0) + (auf.betraege?.beihilfe || 0) + (auf.betraege?.bet || 0) + (auf.betraege?.pflege || 0);
+                    const summeZahlungen = (auf.betraege?.pkv || 0) + (auf.betraege?.beihilfe || 0) + (auf.betraege?.bet || 0);
                     return sum + Math.max(0, auf.betrag - summeZahlungen);
                 }, 0);
             document.getElementById('statEigenbehaltOffen').textContent = `€${offeneEigenbehalt.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
