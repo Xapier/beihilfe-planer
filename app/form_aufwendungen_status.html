@@ -154,12 +154,10 @@
         }
 
         .status-indicator[data-status="offen"] { background: #ff4444; }
-        .status-indicator[data-status="bearbeitung"] { background: #ffcc00; color: #333; }
+        .status-indicator[data-status="eingereicht"] { background: #ffcc00; color: #333; }
         .status-indicator[data-status="bezahlt"] { background: #44cc44; }
-        .status-indicator[data-status="erledigt"] { background: #44cc44; }
-        .status-indicator[data-status="bre-offen"] { background: #FFA500; color: #333; } /* Orange */
-        .status-indicator[data-status="bre-erstattet"] { background: #5DADE2; color: white; } /* Hellblau */
-        .status-indicator[data-status="nicht-noetig"] { background: #999; opacity: 0.5; cursor: default; }
+        .status-indicator[data-status="erstattet"] { background: #44cc44; }
+        .status-indicator[data-status="nicht nötig"] { background: #999; opacity: 0.5; cursor: default; }
         .status-indicator[data-status="warning"] { background: #c084fc; color: white; } /* Lila Warnung */
 
         /* Leer-Zustand */
@@ -481,11 +479,9 @@
                     <select id="filterPkvStatus" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
                         <option value="">-- Alle --</option>
                         <option value="offen">Offen</option>
-                        <option value="bearbeitung">In Bearbeitung</option>
-                        <option value="bre-offen">BRE offen</option>
-                        <option value="bre-erstattet">BRE erstattet</option>
-                        <option value="erledigt">Erledigt</option>
-                        <option value="nicht-noetig">Nicht nötig</option>
+                        <option value="eingereicht">Eingereicht (BRE offen)</option>
+                        <option value="erstattet">Erstattet</option>
+                        <option value="nicht nötig">Nicht nötig</option>
                     </select>
                 </div>
                 <div style="display: flex; flex-direction: column;">
@@ -493,9 +489,8 @@
                     <select id="filterBeihilfeStatus" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
                         <option value="">-- Alle --</option>
                         <option value="offen">Offen</option>
-                        <option value="bearbeitung">In Bearbeitung</option>
-                        <option value="erledigt">Erledigt</option>
-                        <option value="nicht-noetig">Nicht nötig</option>
+                        <option value="erstattet">Erstattet</option>
+                        <option value="nicht nötig">Nicht nötig</option>
                     </select>
                 </div>
                 <div style="display: flex; flex-direction: column;">
@@ -673,11 +668,9 @@
                     <div class="pillar-control">
                         <select name="pkv-status" onchange="updateCalculations(); handleStatusChange('pkv')">
                             <option value="offen">Offen</option>
-                            <option value="bearbeitung">In Bearbeitung</option>
-                            <option value="bre-offen">BRE offen</option>
-                            <option value="bre-erstattet">BRE erstattet</option>
-                            <option value="erledigt">Erledigt</option>
-                            <option value="nicht-noetig">Nicht nötig</option>
+                            <option value="eingereicht">Eingereicht</option>
+                            <option value="erstattet">Erstattet</option>
+                            <option value="nicht nötig">Nicht nötig</option>
                         </select>
                     </div>
                     <div class="pillar-control">
@@ -696,10 +689,7 @@
                     <div class="pillar-title">🎯 BET</div>
                     <div class="pillar-control">
                         <select name="bet-status" onchange="updateCalculations(); handleStatusChange('bet')">
-                            <option value="offen">Offen</option>
-                            <option value="bearbeitung">In Bearbeitung</option>
-                            <option value="erledigt">Erledigt</option>
-                            <option value="nicht-noetig" selected>Nicht nötig</option>
+                            <option value="nicht nötig" selected>Nicht nötig</option>
                         </select>
                     </div>
                     <div class="pillar-control">
@@ -719,9 +709,8 @@
                     <div class="pillar-control">
                         <select name="beihilfe-status" onchange="updateCalculations(); handleStatusChange('beihilfe')">
                             <option value="offen">Offen</option>
-                            <option value="bearbeitung">In Bearbeitung</option>
-                            <option value="erledigt">Erledigt</option>
-                            <option value="nicht-noetig">Nicht nötig</option>
+                            <option value="erstattet">Erstattet</option>
+                            <option value="nicht nötig">Nicht nötig</option>
                         </select>
                     </div>
                     <div class="pillar-control">
