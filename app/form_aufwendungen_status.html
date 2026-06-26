@@ -72,6 +72,7 @@
         .table-section {
             padding: 30px;
             border-bottom: 2px solid #eee;
+            background: white;
         }
 
         .section-title {
@@ -213,6 +214,7 @@
         /* ===== FORMULAR-SEKTION ===== */
         .form-section {
             padding: 30px;
+            background: white;
         }
 
         .form-row {
@@ -344,24 +346,28 @@
         /* LEGENDE */
         .legend {
             display: flex;
-            gap: 30px;
-            padding: 20px 30px;
-            background: #f5f5f5;
-            border-bottom: 1px solid #ddd;
+            gap: 20px;
+            padding: 12px 12px;
+            background: #fafafa;
             flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            font-size: 11px;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 12px;
+            gap: 6px;
+            font-size: 11px;
+            white-space: nowrap;
         }
 
         .legend-box {
-            width: 18px;
-            height: 18px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
+            flex-shrink: 0;
         }
 
         .legend-box.rot { background: #ff4444; }
@@ -416,38 +422,6 @@
         <div class="header">
             <h1>📋 Aufwendungen & Status</h1>
             <p>Belegübersicht mit Ampelanzeige - Verfolgen Sie alle Aufwendungen und deren Bearbeitungsstatus</p>
-        </div>
-
-        <!-- ===== LEGENDE ===== -->
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-box rot"></div>
-                <span><strong>Rot:</strong> Offen</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box gelb"></div>
-                <span><strong>Gelb:</strong> In Bearbeitung</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box hellgruen"></div>
-                <span><strong>Orange:</strong> BRE offen</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box dunkelgruen"></div>
-                <span><strong>Hellblau:</strong> BRE erstattet</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box gruen"></div>
-                <span><strong>Grün:</strong> Erledigt</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box lila"></div>
-                <span><strong>Lila:</strong> Überfällig (Rechnung)</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box grau"></div>
-                <span><strong>Grau:</strong> Entfällt</span>
-            </div>
         </div>
 
         <!-- ===== FORMULAR: NEUE AUFWENDUNG ===== -->
@@ -714,6 +688,40 @@
                         <th class="status-col" title="PKV">PKV</th>
                         <th class="status-col" title="BET">BET</th>
                         <th class="status-col" title="Beihilfe">Beihilfe</th>
+                    </tr>
+                    <tr style="background: #fafafa; border-bottom: 1px solid #eee;">
+                        <td colspan="13" style="padding: 8px 12px;">
+                            <div class="legend">
+                                <div class="legend-item">
+                                    <div class="legend-box rot"></div>
+                                    <span>Offen</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-box gelb"></div>
+                                    <span>In Bearbeitung</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-box hellgruen"></div>
+                                    <span>BRE offen</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-box dunkelgruen"></div>
+                                    <span>BRE erstattet</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-box gruen"></div>
+                                    <span>Erledigt</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-box lila"></div>
+                                    <span>Überfällig</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-box grau"></div>
+                                    <span>Entfällt</span>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
