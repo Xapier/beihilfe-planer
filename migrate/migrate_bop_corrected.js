@@ -246,14 +246,40 @@ async function migrateAufwendungen() {
   // PKV/BH:   3 = erstattet, 4 = offen, 5 = eingereicht (PKV), 6 = abgelehnt (PKV)
   // BET:      immer 'nicht nötig'
   function mapMarker(marker, col) {
-    if (col === 'rechnung') return String(marker) === '0' ? 'bezahlt' : 'offen';
-    if (col === 'bet') return 'nicht nötig';
-    switch (String(marker)) {
-      case '3': return 'erstattet';
-      case '5': return col === 'pkv' ? 'eingereicht' : 'offen';
-      case '6': return col === 'pkv' ? 'abgelehnt' : 'offen';
-      default:  return 'offen';
+    const m = String(marker || '');
+    
+    if (col === 'rechnung') {
+      // Rech_marker: 0 → bezahlt, sonst offen
+      return m === '0' || m === '' ? 'bezahlt' : 'offen';
     }
+    
+    if (col === 'bet') {
+      // BET_marker: immer 4 → nicht nötig
+      return 'nicht nötig';
+    }
+    
+    if (col === 'pkv') {
+      // PKV_marker: 3→erstattet, 4→nicht nötig, 5→eingereicht (BRE offen), 6→erstattet (BRE erstattet)
+      switch (m) {
+        case '3': return 'erstattet';
+        case '4': return 'nicht nötig';
+        case '5': return 'eingereicht';
+        case '6': return 'erstattet';
+        default: return 'offen';
+      }
+    }
+    
+    if (col === 'beihilfe') {
+      // BH_marker: 1→offen, 3→erstattet, 4→nicht nötig
+      switch (m) {
+        case '1': return 'offen';
+        case '3': return 'erstattet';
+        case '4': return 'nicht nötig';
+        default: return 'offen';
+      }
+    }
+    
+    return 'offen';
   }
 
   // 1. Rechnungen
