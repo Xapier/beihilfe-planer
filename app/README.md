@@ -65,12 +65,13 @@ Hauptformular der Anwendung.
 
 Jede Aufwendung hat 5 unabhängige Status-Spalten:
 
-| Säule | Status-Werte |
-|-------|-------------|
-| Rechnung | offen → eingegangen → bezahlt |
-| PKV | offen → eingereicht → erstattet / abgelehnt |
-| BET | offen → eingereicht → erstattet / abgelehnt |
-| Beihilfe | offen → eingereicht → erstattet / abgelehnt |
+| Säule | Beschreibung | Status-Werte |
+|-------|-------------|-------------||
+| Rechnung | Originalrechnung | offen → eingegangen → bezahlt |
+| PKV | Private Krankenversicherung | offen → eingereicht → erstattet / entfällt |
+| BET | Beihilfeergänzungstarif | entfällt (Standard) oder offen → eingereicht → erstattet |
+| Beihilfe | Staatliche Beihilfe | offen → eingereicht → erstattet / entfällt |
+| BRE | Beitragsrückerstattung der PKV | offen → erstattet / entfällt |
 
 **Farbkodierung:**
 - Rot — offen

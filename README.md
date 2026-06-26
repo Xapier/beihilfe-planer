@@ -23,10 +23,16 @@ Kern der Anwendung. Jede Aufwendung durchläuft ein **5-Säulen-System**:
 |-------|-------------|
 | **Rechnung** | Eingang und Bezahlung der Originalrechnung |
 | **PKV** | Einreichung und Erstattung durch die private Krankenversicherung |
-| **BET** | Beamten-Ergänzungs-Tarif (Sammeleinreichung) |
+| **BET** | Beihilfeergänzungstarif (Sammeleinreichung) |
 | **Beihilfe** | Staatliche Beihilfe (Antrag bei der Beihilfestelle) |
+| **BRE** | Beitragsrückerstattung der PKV |
 
-Jede Säule hat einen eigenen Status (`offen` → `eingereicht` → `erstattet`/`abgelehnt`) und einen Erstattungsbetrag.
+Jede Säule hat einen eigenen Status und einen Erstattungsbetrag:
+- **Rechnung:** offen → eingegangen → bezahlt
+- **PKV:** offen → eingereicht → erstattet / entfällt
+- **BET:** entfällt (standardmäßig) oder offen → eingereicht → erstattet
+- **Beihilfe:** offen → eingereicht → erstattet / entfällt
+- **BRE:** offen (falls zutreffend) → erstattet (Rückerstattung durch PKV)
 
 **Unterstützte Aufwendungstypen:** Arzt, Zahnarzt, Apotheke, Krankenhaus, Therapie, Fahrtkosten, Parkgebühr, Sonstiges
 
