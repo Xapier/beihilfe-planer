@@ -16,16 +16,16 @@ Node.js + Express REST-API mit zentralisierter Berechnungslogik für Aufwendunge
 ```
 backend/src/
 ├── db/
-│   ├── database.js        # SQLite Verbindung & Schema-Initialisierung
-│   ├── migrations.js      # Zentrale calculateAmounts() Funktion & Auto-Migration
-│   └── schema/
-│       └── 01_core_tables.sql  # DDL für alle 4 Tabellen
+│   ├── database.js        # SQLite Verbindung & Schema-Initialisierung (generiert DDL)
+│   └── migrations.js      # Zentrale calculateAmounts() Funktion & Auto-Migration
 ├── models/
 │   └── Aufwendung.js      # Data Access Layer mit Calculation Caching
 ├── routes/
 │   └── aufwendungen.js    # REST-API Endpoints (+ Debug-Routes)
 └── server.js              # Express App Initialisierung
 ```
+
+**Schema-Referenzmaterial:** Siehe auch [`database/schema/01_core_tables.sql`](../database/schema/01_core_tables.sql)
 
 ### Berechnungslogik
 
