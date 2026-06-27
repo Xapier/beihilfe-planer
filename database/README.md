@@ -73,7 +73,7 @@ Speichert vorberechnete Werte für jede Aufwendung (zentrale Berechnung im Backe
 | Feld | Typ | Beschreibung |
 |------|-----|-------------|
 | id | TEXT (UUID) | Primärschlüssel |
-| aufwendungId | TEXT | FK → aufwendungen (mit CASCADE DELETE) |
+| aufwendungId | INTEGER | FK → aufwendungen.id (mit CASCADE DELETE) |
 | betrag | REAL | Gesamtbetrag |
 | ausstehend | REAL | PKV ausstehend + Beihilfe ausstehend |
 | eigenbehalt | REAL | Betrag - PKV erl. - Beihilfe erl. (nur wenn entfällt) |
@@ -104,7 +104,7 @@ idx_aufwendungen_status  (rechnungStatus, pkvStatus, beihilfeStatus)
 
 ## Berechnung (Backend-Architektur)
 
-**Zentralisierte Berechnung:** Alle Berechungen erfolgen im Backend, nicht im Frontend.
+**Zentralisierte Berechnung:** Alle Berechnungen erfolgen im Backend, nicht im Frontend.
 
 ### Berechnung-Algorithmus (`backend/src/db/migrations.js`)
 

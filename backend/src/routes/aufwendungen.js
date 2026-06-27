@@ -124,11 +124,13 @@ router.delete('/:id', async (req, res, next) => {
 /**
  * GET /api/aufwendungen/debug/calc/:id
  * Debug: Zeige rohe Daten aus aufwendung_berechnungen Tabelle
+ * ACHTUNG: Nur in Development-Umgebung verfügbar (exposes internal/personal data)
  */
-router.get('/debug/calc/:id', async (req, res, next) => {
-  try {
-    const { getDb } = require('../db/database');
-    const db = getDb();
+if (process.env.NODE_ENV !== 'production') {
+  router.get('/debug/calc/:id', async (req, res, next) => {
+    try {
+      const { getDb } = require('../db/database');
+      const db = getDb();
     
     const result = await db.get(`
       SELECT 
@@ -151,20 +153,21 @@ router.get('/debug/calc/:id', async (req, res, next) => {
       WHERE a.id = ?
     `, [req.params.id]);
     
-    res.json(result || { error: 'Aufwendung nicht gefunden' });
-  } catch (error) {
-    next(error);
-  }
-});
+      res.json(result || { error: 'Aufwendung nicht gefunden' });
+    } catch (error) {
+      next(error);
+    }
+  });
 
-/**
- * GET /api/aufwendungen/debug/all-calcs
- * Debug: Zeige erste 5 Berechnungen aus Tabelle
- */
-router.get('/debug/all-calcs', async (req, res, next) => {
-  try {
-    const { getDb } = require('../db/database');
-    const db = getDb();
+  /**
+   * GET /api/aufwendungen/debug/all-calcs
+   * Debug: Zeige erste 5 Berechnungen aus Tabelle
+   * ACHTUNG: Nur in Development-Umgebung verfügbar (exposes internal data)
+   */
+  router.get('/debug/all-calcs', async (req, res, next) => {
+    try {
+      const { getDb } = require('../db/database');
+      const db = getDb();
     
     const results = await db.all(`
       SELECT 
@@ -179,25 +182,26 @@ router.get('/debug/all-calcs', async (req, res, next) => {
       LIMIT 5
     `);
     
-    res.json(results);
-  } catch (error) {
-    next(error);
-  }
-});
+      res.json(results);
+    } catch (error) {
+      next(error);
+    }
+  });
 
-/**
- * POST /api/aufwendungen/debug/recalculate
- * Debug: Lösche alle Berechnungen und triggere Neuberechnung beim nächsten Server-Restart
- */
-router.post('/debug/recalculate', async (req, res, next) => {
-  try {
-    const { getDb } = require('../db/database');
-    const db = getDb();
+  /**
+   * POST /api/aufwendungen/debug/recalculate
+   * Debug: Lösche alle Berechnungen und triggere Neuberechnung beim nächsten Server-Restart
+   * ACHTUNG: Nur in Development-Umgebung verfügbar (DoS/manipulation risk)
+   */
+  router.post('/debug/recalculate', async (req, res, next) => {
+    try {
+      const { getDb } = require('../db/database');
+      const db = getDb();
     
     // Lösche alle Berechnungen
     await db.run('DELETE FROM aufwendung_berechnungen');
     
-    // Triggere Migration
+      // Triggere Migration
     const { migrateLegacyCalculations } = require('../db/migrations');
     await migrateLegacyCalculations();
     
@@ -207,9 +211,10 @@ router.post('/debug/recalculate', async (req, res, next) => {
       message: `Neuberechnung abgeschlossen: ${count.count} Records`,
       count: count.count 
     });
-  } catch (error) {
-    next(error);
-  }
-});
+    } catch (error) {
+      next(error);
+    }
+  });
+}
 
 module.exports = router;
