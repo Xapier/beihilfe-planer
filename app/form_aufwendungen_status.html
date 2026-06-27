@@ -481,6 +481,7 @@
                     <label for="aufTyp">Aufwendungstyp *</label>
                     <select id="aufTyp" name="aufTyp" required>
                         <option value="">-- Bitte wählen --</option>
+                        <option value="Rechnung">Rechnung (Allgemein)</option>
                         <option value="arzt">Arztbesuch</option>
                         <option value="zahnarzt">Zahnbehandlung</option>
                         <option value="apotheke">Apotheke / Medikamente</option>
@@ -673,15 +674,15 @@
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
                     <div style="text-align: center;">
                         <div style="font-weight: 600; color: #667eea;">Gesamtbetrag</div>
-                        <div style="font-size: 18px; font-weight: bold; color: #333; margin-top: 4px;" id="displaySummeBetrag">€0,00</div>
+                        <div style="font-size: 18px; font-weight: bold; color: #333; margin-top: 4px;" id="displaySummeBetrag">0,00 €</div>
                     </div>
                     <div style="text-align: center;">
                         <div style="font-weight: 600; color: #667eea;">Eigenbehalt (gesamt)</div>
-                        <div style="font-size: 18px; font-weight: bold; color: #333; margin-top: 4px;" id="displaySummeEigenbehalt">€0,00</div>
+                        <div style="font-size: 18px; font-weight: bold; color: #333; margin-top: 4px;" id="displaySummeEigenbehalt">0,00 €</div>
                     </div>
                     <div style="text-align: center;">
                         <div style="font-weight: 600; color: #667eea;">Ausstehend (gesamt)</div>
-                        <div style="font-size: 18px; font-weight: bold; color: #333; margin-top: 4px;" id="displaySummeAusstehend">€0,00</div>
+                        <div style="font-size: 18px; font-weight: bold; color: #333; margin-top: 4px;" id="displaySummeAusstehend">0,00 €</div>
                     </div>
                 </div>
             </div>
@@ -766,9 +767,9 @@
                 <tfoot id="tableSummary" style="display: none; background-color: #f5f5f5; font-weight: bold; border-top: 2px solid #ddd;">
                     <tr>
                         <td colspan="6" style="text-align: right; padding: 12px;">Summe:</td>
-                        <td id="summeBetrag" style="text-align: right; padding: 12px; font-weight: bold;">€0,00</td>
-                        <td id="summeEigenbehalt" style="text-align: right; padding: 12px; font-weight: bold;">€0,00</td>
-                        <td id="summeAusstehend" style="text-align: right; padding: 12px; font-weight: bold;">€0,00</td>
+                        <td id="summeBetrag" style="text-align: right; padding: 12px; font-weight: bold;">0,00 €</td>
+                        <td id="summeEigenbehalt" style="text-align: right; padding: 12px; font-weight: bold;">0,00 €</td>
+                        <td id="summeAusstehend" style="text-align: right; padding: 12px; font-weight: bold;">0,00 €</td>
                         <td colspan="4" style="background: transparent;"></td>
                     </tr>
                 </tfoot>
@@ -797,6 +798,51 @@
         let isLoadingForm = false;  // Flag um AutoSave während Formularladen zu verhindern
         let currentSortColumn = 'datum'; // Standard-Sortierung nach Behandlungsdatum
         let currentSortDirection = 'desc'; // absteigend (neueste zuerst)
+
+        // =========================================================================
+        // HILFSFUNKTION: Datum im Format DD.MM.YYYY formatieren
+        // =========================================================================
+        function formatDateDDMMYYYY(dateString) {
+            if (!dateString) return '-';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return '-';
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}.${month}.${year}`;
+            } catch (err) {
+                return '-';
+            }
+        }
+
+        // =========================================================================
+        // HILFSFUNKTION: Währung im deutsches Format formatieren (z.B. "1.234,56 €")
+        // =========================================================================
+        function formatCurrency(amount) {
+            try {
+                if (amount === null || amount === undefined || isNaN(amount)) {
+                    return '0,00 €';
+                }
+                const num = parseFloat(amount);
+                if (isNaN(num)) {
+                    return '0,00 €';
+                }
+                // Sichere Formatierung ohne toLocaleString
+                const fixed = num.toFixed(2);
+                const parts = fixed.split('.');
+                const integer = parts[0];
+                const decimal = parts[1];
+                
+                // Tausender-Trennzeichen
+                const formatted = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                
+                return formatted + ',' + decimal + ' €';
+            } catch (err) {
+                console.error('❌ formatCurrency Fehler:', err);
+                return '0,00 €';
+            }
+        }
 
         // =========================================================================
         // INITIAL LOAD
@@ -960,7 +1006,7 @@
             const rechnungsBetrag = parseFloat(document.getElementById('rechnungsBetrag').value) || 0;
 
             // Rechnungsbetrag aktualisieren
-            document.getElementById('rechnung-sollbetrag').textContent = `€ ${rechnungsBetrag.toFixed(2)}`;
+            document.getElementById('rechnung-sollbetrag').textContent = formatCurrency(rechnungsBetrag);
 
             // Quoten anzeigen
             document.getElementById('pkv-quote-display').textContent = aktuelleQuoten.pkv || '-';
@@ -977,9 +1023,9 @@
             const betSoll = betStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.bet) / 100;
             const beihilfeSoll = beihilfeStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.beihilfe) / 100;
 
-            document.getElementById('pkv-sollbetrag').textContent = `€ ${pkvSoll.toFixed(2)}`;
-            document.getElementById('beihilfe-sollbetrag').textContent = `€ ${beihilfeSoll.toFixed(2)}`;
-            document.getElementById('bet-sollbetrag').textContent = `€ ${betSoll.toFixed(2)}`;
+            document.getElementById('pkv-sollbetrag').textContent = formatCurrency(pkvSoll);
+            document.getElementById('beihilfe-sollbetrag').textContent = formatCurrency(beihilfeSoll);
+            document.getElementById('bet-sollbetrag').textContent = formatCurrency(betSoll);
 
             // Istbeträge auslesen
             const pkvIst = parseFloat(document.querySelector('[name="pkv-betrag"]').value) || 0;
@@ -1400,8 +1446,8 @@
                     const contact = contacts.find(c => c.id == auf.kontaktId);
                     const patientName = patient ? `${patient.firstName} ${patient.lastName}` : '-';
                     const contactName = contact ? contact.name : '-';
-                    const datum = new Date(auf.datum).toLocaleDateString('de-DE');
-                    const faelligkeitsDatum = auf.faelligkeitsDatum ? new Date(auf.faelligkeitsDatum).toLocaleDateString('de-DE') : '-';
+                    const datum = formatDateDDMMYYYY(auf.datum);
+                    const faelligkeitsDatum = formatDateDDMMYYYY(auf.faelligkeitsDatum);
                     const beschreibung = auf.beschreibung || '-';
                     const rechnungsNr = auf.rechnungsNr || '-';
 
@@ -1412,7 +1458,7 @@
                     // Fälligkeitswarnung prüfen für Rechnung (R)
                     const hatFaelligkeitsWarnung = getFälligkeitsstatus(auf.faelligkeitsDatum, auf.status.rechnung);
                     const rechnungStatusDisplay = hatFaelligkeitsWarnung ? 'warning' : auf.status.rechnung;
-                    const rechnungDatum = auf.daten?.rechnung ? new Date(auf.daten.rechnung).toLocaleDateString('de-DE') : null;
+                    const rechnungDatum = auf.daten?.rechnung ? formatDateDDMMYYYY(auf.daten.rechnung) : null;
                     
                     let rechnungTooltip = `Rechnung: ${auf.status.rechnung}&#10;`;
                     if (auf.status.rechnung === 'bezahlt' && rechnungDatum) {
@@ -1421,7 +1467,24 @@
                     if (hatFaelligkeitsWarnung) {
                         rechnungTooltip += `⚠️ Fällig in den nächsten 5 Tagen!&#10;`;
                     }
-                    rechnungTooltip += `${auf.betrag.toFixed(2)} €`;
+
+                    const pkvDatum = formatDateDDMMYYYY(auf.daten?.pkv);
+                    const betDatum = formatDateDDMMYYYY(auf.daten?.bet);
+                    const beihilfeDatum = formatDateDDMMYYYY(auf.daten?.beihilfe);
+                    
+                    // Formatiere Währungen BEVOR sie verwendet werden
+                    const formattedBetrag = formatCurrency(auf.betrag);
+                    const formattedPkvSoll = formatCurrency(berechnungen.pkvSoll || 0);
+                    const formattedPkvErledigt = formatCurrency(berechnungen.pkvErledigt || 0);
+                    const formattedPkvAusstehend = formatCurrency(berechnungen.pkvAusstehend || 0);
+                    const formattedBetSoll = formatCurrency(berechnungen.betSoll || 0);
+                    const formattedBetErledigt = formatCurrency(berechnungen.betErledigt || 0);
+                    const formattedBeihilfeSoll = formatCurrency(berechnungen.beihilfeSoll || 0);
+                    const formattedBeihilfeErledigt = formatCurrency(berechnungen.beihilfeErledigt || 0);
+                    const formattedBeihilfeAusstehend = formatCurrency(berechnungen.beihilfeAusstehend || 0);
+                    
+                    // Jetzt die Tooltip mit formattedBetrag
+                    rechnungTooltip += formattedBetrag;
 
                     return `
                         <tr onclick="editAufwendung(${auf.id})" style="cursor: pointer;">
@@ -1431,9 +1494,9 @@
                             <td class="doctor-col">${contactName}</td>
                             <td style="padding: 12px; font-size: 12px; color: #666;">${beschreibung}</td>
                             <td style="padding: 12px; font-size: 12px; text-align: center; color: #999;">${rechnungsNr}</td>
-                            <td class="amount-col">${auf.betrag.toFixed(2)} €</td>
-                            <td class="amount-col" style="color: #e74c3c; font-weight: 600;">${eigenbehalt.toFixed(2)} €</td>
-                            <td class="amount-col" style="color: #ff9800; font-weight: 600;">${(berechnungen.ausstehend || 0).toFixed(2)} €</td>
+                            <td class="amount-col">${formatCurrency(auf.betrag)}</td>
+                            <td class="amount-col" style="color: #e74c3c; font-weight: 600;">${formatCurrency(eigenbehalt)}</td>
+                            <td class="amount-col" style="color: #ff9800; font-weight: 600;">${formatCurrency(berechnungen.ausstehend || 0)}</td>
                             <td class="status-col">
                                 <div class="status-cell">
                                     <div class="status-indicator" data-status="${rechnungStatusDisplay}" title="${rechnungTooltip}">Rechn.</div>
@@ -1441,17 +1504,17 @@
                             </td>
                             <td class="status-col">
                                 <div class="status-cell">
-                                    <div class="status-indicator" data-status="${auf.status.pkv}" title="PKV: ${auf.status.pkv}&#10;Datum: ${auf.daten?.pkv ? new Date(auf.daten.pkv).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${berechnungen.pkvSoll?.toFixed(2) || '0.00'}&#10;Erledigt: €${berechnungen.pkvErledigt?.toFixed(2) || '0.00'}&#10;Offen: €${berechnungen.pkvAusstehend?.toFixed(2) || '0.00'}">PKV</div>
+                                    <div class="status-indicator" data-status="${auf.status.pkv}" title="PKV: ${auf.status.pkv}&#10;Datum: ${pkvDatum}&#10;Soll: ${formattedPkvSoll}&#10;Erledigt: ${formattedPkvErledigt}&#10;Offen: ${formattedPkvAusstehend}">PKV</div>
                                 </div>
                             </td>
                             <td class="status-col">
                                 <div class="status-cell">
-                                    <div class="status-indicator" data-status="${auf.status.bet}" title="BET: ${auf.status.bet}&#10;Datum: ${auf.daten?.bet ? new Date(auf.daten.bet).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${berechnungen.betSoll?.toFixed(2) || '0.00'}&#10;Erledigt: €${berechnungen.betErledigt?.toFixed(2) || '0.00'}&#10;Offen: €0.00">BET</div>
+                                    <div class="status-indicator" data-status="${auf.status.bet}" title="BET: ${auf.status.bet}&#10;Datum: ${betDatum}&#10;Soll: ${formattedBetSoll}&#10;Erledigt: ${formattedBetErledigt}&#10;Offen: 0,00 €">BET</div>
                                 </div>
                             </td>
                             <td class="status-col">
                                 <div class="status-cell">
-                                    <div class="status-indicator" data-status="${auf.status.beihilfe}" title="Beihilfe: ${auf.status.beihilfe}&#10;Datum: ${auf.daten?.beihilfe ? new Date(auf.daten.beihilfe).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${berechnungen.beihilfeSoll?.toFixed(2) || '0.00'}&#10;Erledigt: €${berechnungen.beihilfeErledigt?.toFixed(2) || '0.00'}&#10;Offen: €${berechnungen.beihilfeAusstehend?.toFixed(2) || '0.00'}">Beihilfe</div>
+                                    <div class="status-indicator" data-status="${auf.status.beihilfe}" title="Beihilfe: ${auf.status.beihilfe}&#10;Datum: ${beihilfeDatum}&#10;Soll: ${formattedBeihilfeSoll}&#10;Erledigt: ${formattedBeihilfeErledigt}&#10;Offen: ${formattedBeihilfeAusstehend}">Beihilfe</div>
                                 </div>
                             </td>
                             <td class="actions-col">
@@ -1480,16 +1543,16 @@
             // Tfoot aktualisieren
             const tfoot = document.getElementById('tableSummary');
             tfoot.style.display = '';
-            document.getElementById('summeBetrag').textContent = `€${summeBetrag.toFixed(2)}`;
-            document.getElementById('summeEigenbehalt').textContent = `€${summeEigenbehalt.toFixed(2)}`;
-            document.getElementById('summeAusstehend').textContent = `€${summeAusstehend.toFixed(2)}`;
+            document.getElementById('summeBetrag').textContent = formatCurrency(summeBetrag);
+            document.getElementById('summeEigenbehalt').textContent = formatCurrency(summeEigenbehalt);
+            document.getElementById('summeAusstehend').textContent = formatCurrency(summeAusstehend);
             
             // Summary Box oben aktualisieren
             const summaryBox = document.getElementById('summaryBox');
             summaryBox.style.display = '';
-            document.getElementById('displaySummeBetrag').textContent = `€${summeBetrag.toFixed(2)}`;
-            document.getElementById('displaySummeEigenbehalt').textContent = `€${summeEigenbehalt.toFixed(2)}`;
-            document.getElementById('displaySummeAusstehend').textContent = `€${summeAusstehend.toFixed(2)}`;
+            document.getElementById('displaySummeBetrag').textContent = formatCurrency(summeBetrag);
+            document.getElementById('displaySummeEigenbehalt').textContent = formatCurrency(summeEigenbehalt);
+            document.getElementById('displaySummeAusstehend').textContent = formatCurrency(summeAusstehend);
             
             // Patient-Aufteilung aktualisieren
             updatePatientBreakdown(filtered);
@@ -1544,15 +1607,15 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 11px;">
                         <div>
                             <span style="color: #718096;">Gesamt:</span>
-                            <div style="font-weight: 600; color: #333;">€${item.betrag.toFixed(2)}</div>
+                            <div style="font-weight: 600; color: #333;">${formatCurrency(item.betrag)}</div>
                         </div>
                         <div>
                             <span style="color: #718096;">Eigenbehalt:</span>
-                            <div style="font-weight: 600; color: #333;">€${item.eigenbehalt.toFixed(2)}</div>
+                            <div style="font-weight: 600; color: #333;">${formatCurrency(item.eigenbehalt)}</div>
                         </div>
                         <div>
                             <span style="color: #718096;">Ausstehend:</span>
-                            <div style="font-weight: 600; color: #333;">€${item.ausstehend.toFixed(2)}</div>
+                            <div style="font-weight: 600; color: #333;">${formatCurrency(item.ausstehend)}</div>
                         </div>
                     </div>
                     <div style="font-size: 10px; color: #a0aec0; margin-top: 4px; border-top: 1px solid #e2e8f0; padding-top: 4px;">${item.count} Beleg${item.count !== 1 ? 'e' : ''}</div>
@@ -1823,7 +1886,7 @@
         // =========================================================================
         async function deleteAufwendung(id) {
             const auf = aufwendungen.find(a => a.id === id);
-            if (confirm(`Soll diese Aufwendung vom ${new Date(auf.datum).toLocaleDateString('de-DE')} gelöscht werden?`)) {
+            if (confirm(`Soll diese Aufwendung vom ${formatDateDDMMYYYY(auf.datum)} gelöscht werden?`)) {
                 try {
                     await API.aufwendungen.delete(id);
                     if (editingId === id) { editingId = null; autoSaveId = null; }
