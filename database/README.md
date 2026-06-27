@@ -85,9 +85,11 @@ Speichert vorberechnete Werte für jede Aufwendung (zentrale Berechnung im Backe
 | beihilfeErledigt | REAL | Beihilfe-Soll wenn Status = "erstattet" |
 | betSoll | REAL | BET-Soll (normalerweise 0) |
 | betErledigt | REAL | BET-Erledigt (normalerweise 0) |
-| calculatedAt | TEXT (ISO) | Zeitstempel der Berechnung |
+| calculatedAt | TEXT (ISO 8601) | ISO-8601 Zeitstempel der Berechnung (z.B. `2026-06-27T10:30:45.123Z`) |
 
 **Besonderheit:** Diese Tabelle wird automatisch bei Status-Änderungen neu berechnet. Die Formeln befinden sich in `backend/src/db/migrations.js` (`calculateAmounts()` Funktion).
+
+**Wichtig:** `calculatedAt` wird immer als ISO-String gespeichert (konsistente Formate zwischen INSERT und UPDATE).
 
 ---
 

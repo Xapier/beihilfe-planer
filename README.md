@@ -70,6 +70,11 @@ EIGENBEHALT = Betrag - PKV erledigt - Beihilfe erledigt
 
 **Besonderheit:** Alle Berechnungen (Ausstehend, Eigenbehalt, etc.) erfolgen **zentral im Backend**. Das Frontend verwendet nur die API-Ergebnisse – keine lokalen Berechnungen.
 
+**Sicherheit:**
+- Debug-Endpoints (`/api/aufwendungen/debug/*`) sind **nur in Development-Modus aktiviert** (`NODE_ENV === 'development'`)
+- Production-Deployment setzt automatisch `NODE_ENV=production` in `docker-compose.yml`
+- Keine sensiblen Daten in Debug-APIs sichtbar bei Production-Deployment
+
 **Datenpersistenz:**
 - SQLite-Datei im Docker-Volume `db_data:/data`
 - Auto-Migration beim Backend-Start
