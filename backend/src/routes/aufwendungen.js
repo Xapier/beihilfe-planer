@@ -126,7 +126,7 @@ router.delete('/:id', async (req, res, next) => {
  * Debug: Zeige rohe Daten aus aufwendung_berechnungen Tabelle
  * ACHTUNG: Nur in Development-Umgebung verfügbar (exposes internal/personal data)
  */
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'development') {
   router.get('/debug/calc/:id', async (req, res, next) => {
     try {
       const { getDb } = require('../db/database');
