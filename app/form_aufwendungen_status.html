@@ -1043,6 +1043,12 @@
             
             if (!statusSelect || !datumInput) return;
             
+            // Prüfe ob ein Beleg bearbeitet wird
+            if (!editingId && !autoSaveId) {
+                console.warn('Kein Beleg zur Bearbeitung ausgewählt');
+                return;
+            }
+            
             const status = statusSelect.value;
             
             // Wenn Status nicht "offen" ist, Datum auf heute setzen
@@ -1054,8 +1060,8 @@
                 datumInput.value = '';
             }
             
-            // Auto-Save triggern
-            autoSaveAufwendung();
+            // Auto-Save mit leichter Verzögerung triggern, damit Datum aktualisiert wird
+            setTimeout(autoSaveAufwendung, 100);
         }
 
         // Event Listener für Datumfelder - speichern wenn Datum geändert wird
@@ -1644,8 +1650,22 @@
                     const created = await API.aufwendungen.create(payload);
                     autoSaveId = created.id;
                 }
+                // Warte kurz, damit Backend die berechnungen vollständig neu berechnet hat
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                // Lade die neuen Daten vom API
                 aufwendungen = await API.aufwendungen.getAll();
                 contacts = await API.contacts.getAll();
+                
+                // Wenn gerade einen Beleg bearbeitet wird, aktualisiere das Formular mit neuen berechnungen
+                if (editingId) {
+                    const updated = aufwendungen.find(a => a.id === editingId);
+                    if (updated) {
+                        // Aktualisiere nur die Formular-Anzeigeelemente, nicht die Eingabefelder
+                        updateCalculations();
+                    }
+                }
+                
                 renderTable();
             } catch (err) {
                 console.error('Auto-Save Fehler:', err);
