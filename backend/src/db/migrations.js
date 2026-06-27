@@ -115,7 +115,7 @@ async function migrateLegacyCalculations() {
           [
             uuidv4(),
             auf.id,
-            berechnungen.ausstehend + berechnungen.eigenbehalt, // ursprünglicher Betrag
+            auf.betrag, // ursprünglicher Rechnungsbetrag
             berechnungen.ausstehend,
             berechnungen.eigenbehalt,
             berechnungen.pkvSoll,
