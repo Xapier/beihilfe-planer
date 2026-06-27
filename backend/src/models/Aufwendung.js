@@ -1,4 +1,6 @@
 const { getDb } = require('../db/database');
+const { v4: uuidv4 } = require('uuid');
+const { calculateAmounts } = require('../db/migrations');
 
 class Aufwendung {
   /**
@@ -10,7 +12,7 @@ class Aufwendung {
       `SELECT * FROM aufwendungen ORDER BY datum DESC, faelligkeitsDatum DESC`
     );
     
-    return rows.map(row => this.deserialize(row));
+    return await Promise.all(rows.map(row => this.deserializeWithCalculations(row)));
   }
 
   /**
@@ -23,7 +25,7 @@ class Aufwendung {
       [patientId]
     );
     
-    return rows.map(row => this.deserialize(row));
+    return await Promise.all(rows.map(row => this.deserializeWithCalculations(row)));
   }
 
   /**
@@ -36,7 +38,7 @@ class Aufwendung {
       [id]
     );
     
-    return row ? this.deserialize(row) : null;
+    return row ? await this.deserializeWithCalculations(row) : null;
   }
 
   /**
@@ -74,6 +76,12 @@ class Aufwendung {
     );
     
     const created = await this.getById(result.lastID);
+    
+    // Speichere Berechnungen
+    if (created) {
+      await this.storeCalculations(result.lastID, created);
+    }
+    
     return created;
   }
 
@@ -163,6 +171,12 @@ class Aufwendung {
         `UPDATE aufwendungen SET ${updates.join(', ')} WHERE id = ?`,
         values
       );
+      
+      // Neuberechnung speichern
+      const updated = await this.getById(id);
+      if (updated) {
+        await this.storeCalculations(id, updated);
+      }
     }
     
     return await this.getById(id);
@@ -202,6 +216,157 @@ class Aufwendung {
         beihilfe: row.beihilfeBetrag
       },
       daten: row.statusDaten ? JSON.parse(row.statusDaten) : {}
+    };
+  }
+
+  /**
+   * Hilfsfunktion: Konvertiere DB-Reihe zu Frontend-Format mit Berechnungen
+   */
+  static async deserializeWithCalculations(row) {
+    const aufwendung = this.deserialize(row);
+    
+    // Lade Berechnungen aus DB (wenn vorhanden)
+    const berechnungen = await this.getCalculations(row.id);
+    
+    if (berechnungen) {
+      aufwendung.berechnungen = berechnungen;
+    } else {
+      // Fallback: Berechne on-the-fly wenn nicht in DB vorhanden
+      const patient = await this.getPatientData(row.patientId);
+      aufwendung.berechnungen = calculateAmounts(patient, row);
+    }
+    
+    return aufwendung;
+  }
+
+  /**
+   * Speichere berechnete Werte in der Datenbank
+   */
+  static async storeCalculations(aufwendungId, aufwendung) {
+    const db = getDb();
+    
+    try {
+      // Lade Patient-Daten für Berechnung
+      const patient = await this.getPatientData(aufwendung.patientId);
+      
+      // Berechne Werte zentral
+      const berechnungen = calculateAmounts(patient, {
+        betrag: aufwendung.betrag,
+        pkvStatus: aufwendung.status.pkv,
+        beihilfeStatus: aufwendung.status.beihilfe
+      });
+
+      // Überprüfe ob Calculation bereits existiert
+      const existing = await db.get(
+        'SELECT id FROM aufwendung_berechnungen WHERE aufwendungId = ?',
+        [aufwendungId]
+      );
+
+      if (existing) {
+        // Update
+        await db.run(
+          `UPDATE aufwendung_berechnungen SET
+            betrag = ?, ausstehend = ?, eigenbehalt = ?,
+            pkvSoll = ?, pkvAusstehend = ?, pkvErledigt = ?,
+            beihilfeSoll = ?, beihilfeAusstehend = ?, beihilfeErledigt = ?,
+            betSoll = ?, betErledigt = ?, lastUpdated = CURRENT_TIMESTAMP
+            WHERE aufwendungId = ?`,
+          [
+            aufwendung.betrag,
+            berechnungen.ausstehend,
+            berechnungen.eigenbehalt,
+            berechnungen.pkvSoll,
+            berechnungen.pkvAusstehend,
+            berechnungen.pkvErledigt,
+            berechnungen.beihilfeSoll,
+            berechnungen.beihilfeAusstehend,
+            berechnungen.beihilfeErledigt,
+            berechnungen.betSoll,
+            berechnungen.betErledigt,
+            aufwendungId
+          ]
+        );
+      } else {
+        // Insert
+        await db.run(
+          `INSERT INTO aufwendung_berechnungen (
+            id, aufwendungId, betrag, ausstehend, eigenbehalt,
+            pkvSoll, pkvAusstehend, pkvErledigt,
+            beihilfeSoll, beihilfeAusstehend, beihilfeErledigt,
+            betSoll, betErledigt, calculatedAt
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            uuidv4(),
+            aufwendungId,
+            aufwendung.betrag,
+            berechnungen.ausstehend,
+            berechnungen.eigenbehalt,
+            berechnungen.pkvSoll,
+            berechnungen.pkvAusstehend,
+            berechnungen.pkvErledigt,
+            berechnungen.beihilfeSoll,
+            berechnungen.beihilfeAusstehend,
+            berechnungen.beihilfeErledigt,
+            berechnungen.betSoll,
+            berechnungen.betErledigt,
+            new Date().toISOString()
+          ]
+        );
+      }
+    } catch (err) {
+      console.error('❌ Fehler beim Speichern der Berechnungen:', err);
+      // Fehler nicht werfen - System soll weiterarbeiten
+    }
+  }
+
+  /**
+   * Lade berechnete Werte aus der Datenbank
+   */
+  static async getCalculations(aufwendungId) {
+    const db = getDb();
+    
+    try {
+      const row = await db.get(
+        `SELECT * FROM aufwendung_berechnungen WHERE aufwendungId = ?`,
+        [aufwendungId]
+      );
+      
+      if (row) {
+        return {
+          betrag: row.betrag,
+          ausstehend: row.ausstehend,
+          eigenbehalt: row.eigenbehalt,
+          pkvSoll: row.pkvSoll,
+          pkvAusstehend: row.pkvAusstehend,
+          pkvErledigt: row.pkvErledigt,
+          beihilfeSoll: row.beihilfeSoll,
+          beihilfeAusstehend: row.beihilfeAusstehend,
+          beihilfeErledigt: row.beihilfeErledigt,
+          betSoll: row.betSoll,
+          betErledigt: row.betErledigt
+        };
+      }
+      return null;
+    } catch (err) {
+      console.error('❌ Fehler beim Laden der Berechnungen:', err);
+      return null;
+    }
+  }
+
+  /**
+   * Lade Patient-Daten für Berechnung
+   */
+  static async getPatientData(patientId) {
+    const db = getDb();
+    
+    const row = await db.get(
+      `SELECT pkvQuote, beihilfeQuote FROM patients WHERE id = ?`,
+      [patientId]
+    );
+    
+    return {
+      pkvQuote: row?.pkvQuote || 0,
+      beihilfeQuote: row?.beihilfeQuote || 0
     };
   }
 
