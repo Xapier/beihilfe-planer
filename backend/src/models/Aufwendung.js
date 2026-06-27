@@ -5,6 +5,9 @@ const { calculateAmounts } = require('../db/migrations');
 class Aufwendung {
   /**
    * Alle Aufwendungen abrufen
+   * 
+   * NOTE: This currently uses N+1 query pattern (separate query per aufwendung for calculations/patient).
+   * TODO: Optimize with JOIN queries in single statement to avoid N+1 performance issue.
    */
   static async getAll() {
     const db = getDb();
@@ -17,6 +20,9 @@ class Aufwendung {
 
   /**
    * Aufwendungen für einen Patienten abrufen
+   * 
+   * NOTE: This currently uses N+1 query pattern (separate query per aufwendung for calculations).
+   * TODO: Optimize with JOIN queries in single statement to avoid N+1 performance issue.
    */
   static async getByPatientId(patientId) {
     const db = getDb();
@@ -269,7 +275,7 @@ class Aufwendung {
             betrag = ?, ausstehend = ?, eigenbehalt = ?,
             pkvSoll = ?, pkvAusstehend = ?, pkvErledigt = ?,
             beihilfeSoll = ?, beihilfeAusstehend = ?, beihilfeErledigt = ?,
-            betSoll = ?, betErledigt = ?, lastUpdated = CURRENT_TIMESTAMP
+            betSoll = ?, betErledigt = ?, calculatedAt = ?
             WHERE aufwendungId = ?`,
           [
             aufwendung.betrag,
@@ -283,6 +289,7 @@ class Aufwendung {
             berechnungen.beihilfeErledigt,
             berechnungen.betSoll,
             berechnungen.betErledigt,
+            new Date().toISOString(),
             aufwendungId
           ]
         );

@@ -11,8 +11,8 @@ function calculateAmounts(patient, auf) {
       pkvSoll: 0, pkvAusstehend: 0, pkvErledigt: 0,
       beihilfeSoll: 0, beihilfeAusstehend: 0, beihilfeErledigt: 0,
       betSoll: 0, betErledigt: 0,
-      ausstehend: auf.betrag,
-      eigenbehalt: auf.betrag
+      ausstehend: 0,
+      eigenbehalt: 0
     };
   }
 
@@ -115,7 +115,7 @@ async function migrateLegacyCalculations() {
           [
             uuidv4(),
             auf.id,
-            berechnungen.ausstehend + berechnungen.eigenbehalt, // ursprünglicher Betrag
+            auf.betrag, // ursprünglicher Rechnungsbetrag
             berechnungen.ausstehend,
             berechnungen.eigenbehalt,
             berechnungen.pkvSoll,
