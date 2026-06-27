@@ -104,6 +104,31 @@ node migrate_bop_corrected.js "<Pfad zur BOP_SQL_Daten.s3db>" "./beihilfe-migrat
 Anschließend die erzeugte `beihilfe-migrated.db` in das Docker-Volume einspielen.  
 Detaillierte Anleitung: [migrate/MIGRATION_GUIDE.md](migrate/MIGRATION_GUIDE.md)
 
+### Demo-Umgebung
+
+Eine Live-Demo-Instanz mit Beispieldaten ist unter **Port 8081** verfügbar:
+
+```bash
+# Demo auf dem Server starten
+ssh root@192.168.188.61
+cd /opt/beihilfe-demo
+docker compose up -d
+```
+
+**Demo-URL:** `http://192.168.188.61:8081`
+
+**Beispieldaten:**
+- **3 Patienten:** Max Mustermann (50/50), Erika Mustermann (30/70), Lukas Mustermann (20/80)
+- **8 Kontakte:** Ärzte, Zahnärzte, Klinik, Apotheke, Physiotherapie
+- **12 Aufwendungen:** Mit realistischen Status-Kombinationen für alle 4 Säulen
+
+**Gesamt-Beispielbilanz:**
+- Gesamtbetrag: **4.549,20 €**
+- Ausstehend: **2.073,40 €**
+- Eigenbehalt: **2.073,40 €**
+
+Die Demo-Umgebung wird separat betrieben und beeinträchtigt nicht die Production-Datenbank auf Port 80.
+
 ## Benutzeroberfläche - User Guide
 
 ### 🏠 Dashboard
@@ -114,6 +139,10 @@ Detaillierte Anleitung: [migrate/MIGRATION_GUIDE.md](migrate/MIGRATION_GUIDE.md)
 - **Statistik-Boxen:** Zeigen Anzahl Patienten, Aufwendungen, sowie Gesamtbetrag, Ausstehend und Eigenbehalt
 - **Schnelllinks:** Direkte Navigation zu den Verwaltungs-Funktionen
 - **Aktuelle Aktivitäten:** Übersicht über die letzten Transaktionen (in zukünftigen Versionen)
+
+![Dashboard](docs/screenshots/dashboard.png)
+
+> **Live-Demo-Daten:** 3 Patienten (Mustermann-Familie), 12 Aufwendungen, 4.549,20 € Gesamtbetrag. Siehe Demo unter [http://192.168.188.61:8081](http://192.168.188.61:8081)
 
 **Formatierung:**
 - Alle Währungen in deutschem Format: `1.234,56 €`
@@ -186,6 +215,10 @@ Darunter: Zusammenfassung der Aufwendungen pro Patient
 - Ausstehend pro Patient  
 - Eigenbehalt pro Patient
 
+![Aufwendungen & Status](docs/screenshots/aufwendungen.png)
+
+> **Live-Demo-Daten:** Zeigt 12 Aufwendungen mit verschiedenen Status-Kombinationen (alle Säulen offen, teilweise erledigt, BET aktiv, etc.). Datum-Format DD.MM.YYYY, Währung mit Tausender-Trennzeichen (z.B. 1.234,56 €).
+
 ---
 
 ### 👥 Patienten Verwaltung
@@ -210,6 +243,10 @@ Darunter: Zusammenfassung der Aufwendungen pro Patient
 
 **Besonderheit:** Die Patient-Quotes werden bei der Aufwendungs-Erfassung als Default-Wert übernommen, können aber pro Aufwendung überschrieben werden.
 
+![Patienten Verwaltung](docs/screenshots/patienten.png)
+
+> **Live-Demo-Daten:** Zeigt 3 Demo-Patienten mit unterschiedlichen PKV/Beihilfe-Quoten (50/50, 30/70, 20/80). Auto-Berechnung der Gegenquote funktioniert live in der Demo.
+
 ---
 
 ### 🏥 Kontakte Verwaltung
@@ -232,6 +269,10 @@ Darunter: Zusammenfassung der Aufwendungen pro Patient
 
 **Verwendung:** Bei der Aufwendungs-Erfassung können Kontakte als "Arzt/Klinik" zugeordnet werden. Dies hilft bei der Nachverfolgung, welche Behandlungen bei welchem Provider erfolgt sind.
 
+![Kontakte Verwaltung](docs/screenshots/kontakte.png)
+
+> **Live-Demo-Daten:** 8 Demo-Kontakte (Ärzte, Zahnärzte, Klinik, Apotheke, Physiotherapie) mit Typisierung und Adressangaben. Such- und Filter-Funktionen aktiv.
+
 ---
 
 ### 📊 Berichte & Auswertungen
@@ -244,6 +285,10 @@ Darunter: Zusammenfassung der Aufwendungen pro Patient
 - **Ausstehend-Report:** Offene Forderungen gegen PKV und Beihilfe
 - **Überfällig-Report:** Rechnungen/Anfragen, die zu lange offen sind
 - **Export-Funktionen:** CSV/PDF für Weiterverarbeitung in Excel/Buchhaltung
+
+![Berichte & Auswertungen](docs/screenshots/berichte.png)
+
+> *Seite ist in Entwicklung. Screenshot zeigt zukünftiges UI-Layout.*
 
 ---
 

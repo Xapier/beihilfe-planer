@@ -82,11 +82,48 @@ CREATE TABLE IF NOT EXISTS aufwendungen (
 );
 
 -- ============================================================================
+-- 4. AUFWENDUNG_BERECHNUNGEN (Berechnete Werte – zentral im Backend)
+-- ============================================================================
+-- Wird von calculateAmounts() in migrations.js befüllt und aktualisiert.
+-- Frontend liest NUR diese Tabelle für Beträge (kein eigenes Berechnen).
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS aufwendung_berechnungen (
+  id TEXT PRIMARY KEY,
+  aufwendungId INTEGER NOT NULL UNIQUE,
+
+  -- Hauptwerte (für UI-Anzeige)
+  betrag REAL NOT NULL,
+  ausstehend REAL NOT NULL,
+  eigenbehalt REAL NOT NULL,
+
+  -- PKV-Komponenten
+  pkvSoll REAL,
+  pkvAusstehend REAL,
+  pkvErledigt REAL,
+
+  -- Beihilfe-Komponenten
+  beihilfeSoll REAL,
+  beihilfeAusstehend REAL,
+  beihilfeErledigt REAL,
+
+  -- BET-Komponenten
+  betSoll REAL,
+  betErledigt REAL,
+
+  -- Audit
+  lastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP,
+  calculatedAt DATETIME,
+
+  FOREIGN KEY (aufwendungId) REFERENCES aufwendungen(id) ON DELETE CASCADE
+);
+
+-- ============================================================================
 -- INDICES für Performance
 -- ============================================================================
 CREATE INDEX IF NOT EXISTS idx_aufwendungen_patientId ON aufwendungen(patientId);
 CREATE INDEX IF NOT EXISTS idx_aufwendungen_datum ON aufwendungen(datum);
 CREATE INDEX IF NOT EXISTS idx_aufwendungen_faelligkeitsDatum ON aufwendungen(faelligkeitsDatum);
 CREATE INDEX IF NOT EXISTS idx_aufwendungen_status ON aufwendungen(rechnungStatus, pkvStatus, beihilfeStatus);
+CREATE INDEX IF NOT EXISTS idx_berechnungen_aufwendungId ON aufwendung_berechnungen(aufwendungId);
 
 COMMIT;
