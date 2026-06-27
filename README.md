@@ -22,17 +22,35 @@ Kern der Anwendung. Jede Aufwendung durchläuft ein **5-Säulen-System**:
 | Säule | Beschreibung |
 |-------|-------------|
 | **Rechnung** | Eingang und Bezahlung der Originalrechnung |
-| **PKV** | Einreichung und Erstattung durch die private Krankenversicherung |
-| **BET** | Beihilfeergänzungstarif (Sammeleinreichung) |
+| **PKV** | Einreichung und Erstattung durch die private Krankenversicherung (mit BRE-Support) |
+| **Beihilfeergänzung (BET)** | Beihilfeergänzungstarif oder entfällt |
 | **Beihilfe** | Staatliche Beihilfe (Antrag bei der Beihilfestelle) |
-| **BRE** | Beitragsrückerstattung der PKV |
 
 Jede Säule hat einen eigenen Status und einen Erstattungsbetrag:
 - **Rechnung:** offen → eingegangen → bezahlt
-- **PKV:** offen → eingereicht → erstattet / entfällt
-- **BET:** entfällt (standardmäßig) oder offen → eingereicht → erstattet
+- **PKV:** offen → eingereicht → BRE offen → BRE erstattet → erstattet / entfällt
+- **Beihilfeergänzung (BET):** entfällt (Standard) oder offen → eingereicht → erstattet
 - **Beihilfe:** offen → eingereicht → erstattet / entfällt
-- **BRE:** offen (falls zutreffend) → erstattet (Rückerstattung durch PKV)
+
+### Berechnung von Ausstehend und Eigenbehalt
+
+**Zentrale Berechnungslogik** befindet sich im Backend (`calculateAmounts()` in `backend/src/db/migrations.js`). Frontend bezieht alle berechneten Werte von der API.
+
+**Formeln:**
+```
+PKV ausstehend = PKV-Soll, wenn Status ∈ {offen, eingereicht}, sonst 0
+Beihilfe ausstehend = Beihilfe-Soll, wenn Status ∈ {offen, eingereicht}, sonst 0
+
+AUSSTEHEND = PKV ausstehend + Beihilfe ausstehend
+             (Summe der noch zu erwartenden Erstattungen)
+
+PKV erledigt = PKV-Soll, wenn Status = "erstattet", sonst 0
+Beihilfe erledigt = Beihilfe-Soll, wenn Status = "erstattet", sonst 0
+
+EIGENBEHALT = Betrag - PKV erledigt - Beihilfe erledigt
+              (nur wenn PKV Status = "entfällt" ODER Beihilfe Status = "entfällt")
+              (sonst 0 - Patient zahlt nichts, da Kostenträger zuständig)
+```
 
 **Unterstützte Aufwendungstypen:** Arzt, Zahnarzt, Apotheke, Krankenhaus, Therapie, Fahrtkosten, Parkgebühr, Sonstiges
 
@@ -45,11 +63,17 @@ Jede Säule hat einen eigenen Status und einen Erstattungsbetrag:
 
 ## Technischer Aufbau
 
-```
-Frontend (nginx)       → statische HTML/CSS/JS Seiten
-Backend (Node.js)      → REST-API auf Port 3000
-Datenbank (SQLite)     → 3 Tabellen: patients, contacts, aufwendungen
-```
+**Architektur:**
+- **Frontend (nginx):** Statische HTML/CSS/JS-Seiten (Pure JavaScript, keine Frameworks)
+- **Backend (Node.js + Express):** REST-API mit zentraler Berechnung
+- **Datenbank (SQLite):** Schemas in `database/schema/`
+
+**Besonderheit:** Alle Berechnungen (Ausstehend, Eigenbehalt, etc.) erfolgen **zentral im Backend**. Das Frontend verwendet nur die API-Ergebnisse – keine lokalen Berechnungen.
+
+**Datenpersistenz:**
+- SQLite-Datei im Docker-Volume `db_data:/data`
+- Auto-Migration beim Backend-Start
+- 178 Testdatensätze werden bei Bedarf migriert
 
 ### Deployment (Docker)
 
