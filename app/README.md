@@ -16,6 +16,14 @@ app/
 └── api.js                        → Gemeinsamer API-Client für alle Seiten
 ```
 
+## 📸 Screenshots
+
+![Dashboard](../docs/screenshots/dashboard.png)
+
+![Kontakte Verwaltung](../docs/screenshots/kontakte.png)
+
+![Berichte](../docs/screenshots/berichte.png)
+
 ## API-Client (`api.js`)
 
 Alle Seiten verwenden dasselbe `api.js`, das HTTP-Anfragen an `/api` sendet (nginx-Proxy → Backend Port 3000).
@@ -44,9 +52,13 @@ API.aufwendungen.create(data)
   - Beihilfe-Quote eingeben → PKV-Quote wird berechnet
 - Validierung verhindert Speichern ohne mindestens einen Quotenwert
 
+![Patienten Verwaltung](../docs/screenshots/patienten.png)
+
 ## Aufwendungen (`form_aufwendungen_status.html`)
 
 Hauptformular der Anwendung.
+
+![Aufwendungen & Status](../docs/screenshots/aufwendungen.png)
 
 ### Erfassungsfelder
 

@@ -156,8 +156,61 @@ auf.berechnungen.pkvAusstehend  // € von PKV ausstehend
 ```
 database/
 ├── schema/
-│   └── 01_core_tables.sql   ← Produktionsschema (3 Tabellen + Indizes)
+│   ├── 01_core_tables.sql   ← Produktionsschema (aufwendung_berechnungen Tabelle)
+│   └── 02_demo_seed.sql     ← Demo-Beispieldaten (3 Patienten, 8 Kontakte, 12 Aufwendungen)
 ├── CLEANUP_ANALYSIS.md      ← Dokumentation der Bereinigung (BOP-Artefakte)
 └── README.md                ← Dieses Dokument
 ```
+
+## Demo-Datenbank (Beispieldaten)
+
+**Datei:** [`schema/02_demo_seed.sql`](schema/02_demo_seed.sql)
+
+Die Demo-Datenbank enthält realistische Beispieldaten zum Testen und zur Dokumentation:
+
+### Demo-Patienten (3)
+- **Max Mustermann** (50/50 PKV/Beihilfe) - Geburtsdatum: 12.04.1975
+- **Erika Mustermann** (30/70 PKV/Beihilfe) - Geburtsdatum: 03.09.1978
+- **Lukas Mustermann** (20/80 PKV/Beihilfe) - Geburtsdatum: 21.02.2005
+
+### Demo-Kontakte (8)
+- Dr. med. Anna Bergmann (Allgemeinmedizin)
+- Dr. med. dent. Maria Wolff (Kieferorthopädie)
+- Dr. med. Julia Schneider (Zahnarzt)
+- Dr. med. Klaus Fischer (Orthopädie)
+- Dr. med. Stefan Hoffmann (Innere Medizin)
+- Krankenhaus Mitte GmbH (Krankenhaus)
+- Physiotherapie Sonnenhof (Physiotherapie)
+- Stadt-Apotheke am Markt (Apotheke)
+
+### Demo-Aufwendungen (12)
+Verschiedene Aufwendungen mit unterschiedlichen Status-Kombinationen:
+
+| Status | Beispiel |
+|--------|----------|
+| ✅ Vollständig erstattet | Zahnarztleistung (PKV + Beihilfe erstattet) |
+| 🟡 PKV erstattet, Beihilfe eingereicht | Krankenhausaufenthalt |
+| 🟡 Alles offen | Arztbesuch gerade erfolgt |
+| 🟣 Überfällig | Alte Apotheken-Rechnung |
+| 🔄 BET aktiv | Zahnleistung mit Beamten-Ergänzungs-Tarif |
+| 💵 Eigenbehalt | Fahrtkosten (gesamt Patient zahlt) |
+
+**Gesamtsumme Demo-Bilanz:**
+- Gesamtbetrag: **4.549,20 €**
+- Ausstehend: **2.073,40 €**
+- Eigenbehalt: **2.073,40 €**
+
+### Verwendung
+
+```bash
+# Demo-Datenbank lokal erstellen
+sqlite3 demo.db < database/schema/01_core_tables.sql
+sqlite3 demo.db < database/schema/02_demo_seed.sql
+
+# Oder im Docker mit separatem docker-compose.demo.yml:
+docker compose -f docker-compose.demo.yml up -d
+# Demo verfügbar unter: http://localhost:8081
+```
+
+Die Demo-Umgebung wird separat betrieben und beeinträchtigt nicht die Production-Datenbank.
 
