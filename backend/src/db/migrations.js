@@ -34,8 +34,12 @@ function calculateAmounts(patient, auf) {
   const pkvErledigt = auf.pkvStatus === 'erstattet' ? pkvSoll : 0;
   const beihilfeErledigt = auf.beihilfeStatus === 'erstattet' ? beihilfeSoll : 0;
   
-  // Eigenbehalt: Nur berechnet wenn PKV Status = "entfällt" ODER Beihilfe Status = "entfällt"
-  const eigenbehalt = (auf.pkvStatus === 'entfällt' || auf.beihilfeStatus === 'entfällt') 
+  // Eigenbehalt: Berechnet wenn PKV = "entfällt" ODER "BRE erstattet" (Jahres-Pauschal, nicht einzelne Beträge)
+  // ODER wenn Beihilfe = "entfällt"
+  // BRE erstattet bedeutet: Am Jahresende Prämie X, aber einzelne PKV-Anteile pro Beleg nicht erstattet
+  const eigenbehalt = (auf.pkvStatus === 'entfällt' || 
+                       auf.pkvStatus === 'BRE erstattet' ||
+                       auf.beihilfeStatus === 'entfällt') 
     ? Math.max(0, betrag - pkvErledigt - beihilfeErledigt) 
     : 0;
 
