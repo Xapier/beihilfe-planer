@@ -674,15 +674,15 @@
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
                     <div style="text-align: center;">
                         <div style="font-weight: 600; color: #667eea;">Gesamtbetrag</div>
-                        <div style="font-size: 18px; font-weight: bold; color: #333; margin-top: 4px;" id="displaySummeBetrag">€0,00</div>
+                        <div style="font-size: 18px; font-weight: bold; color: #333; margin-top: 4px;" id="displaySummeBetrag">0,00 €</div>
                     </div>
                     <div style="text-align: center;">
                         <div style="font-weight: 600; color: #667eea;">Eigenbehalt (gesamt)</div>
-                        <div style="font-size: 18px; font-weight: bold; color: #333; margin-top: 4px;" id="displaySummeEigenbehalt">€0,00</div>
+                        <div style="font-size: 18px; font-weight: bold; color: #333; margin-top: 4px;" id="displaySummeEigenbehalt">0,00 €</div>
                     </div>
                     <div style="text-align: center;">
                         <div style="font-weight: 600; color: #667eea;">Ausstehend (gesamt)</div>
-                        <div style="font-size: 18px; font-weight: bold; color: #333; margin-top: 4px;" id="displaySummeAusstehend">€0,00</div>
+                        <div style="font-size: 18px; font-weight: bold; color: #333; margin-top: 4px;" id="displaySummeAusstehend">0,00 €</div>
                     </div>
                 </div>
             </div>
@@ -767,9 +767,9 @@
                 <tfoot id="tableSummary" style="display: none; background-color: #f5f5f5; font-weight: bold; border-top: 2px solid #ddd;">
                     <tr>
                         <td colspan="6" style="text-align: right; padding: 12px;">Summe:</td>
-                        <td id="summeBetrag" style="text-align: right; padding: 12px; font-weight: bold;">€0,00</td>
-                        <td id="summeEigenbehalt" style="text-align: right; padding: 12px; font-weight: bold;">€0,00</td>
-                        <td id="summeAusstehend" style="text-align: right; padding: 12px; font-weight: bold;">€0,00</td>
+                        <td id="summeBetrag" style="text-align: right; padding: 12px; font-weight: bold;">0,00 €</td>
+                        <td id="summeEigenbehalt" style="text-align: right; padding: 12px; font-weight: bold;">0,00 €</td>
+                        <td id="summeAusstehend" style="text-align: right; padding: 12px; font-weight: bold;">0,00 €</td>
                         <td colspan="4" style="background: transparent;"></td>
                     </tr>
                 </tfoot>
@@ -1607,15 +1607,15 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 11px;">
                         <div>
                             <span style="color: #718096;">Gesamt:</span>
-                            <div style="font-weight: 600; color: #333;">€${item.betrag.toFixed(2)}</div>
+                            <div style="font-weight: 600; color: #333;">${formatCurrency(item.betrag)}</div>
                         </div>
                         <div>
                             <span style="color: #718096;">Eigenbehalt:</span>
-                            <div style="font-weight: 600; color: #333;">€${item.eigenbehalt.toFixed(2)}</div>
+                            <div style="font-weight: 600; color: #333;">${formatCurrency(item.eigenbehalt)}</div>
                         </div>
                         <div>
                             <span style="color: #718096;">Ausstehend:</span>
-                            <div style="font-weight: 600; color: #333;">€${item.ausstehend.toFixed(2)}</div>
+                            <div style="font-weight: 600; color: #333;">${formatCurrency(item.ausstehend)}</div>
                         </div>
                     </div>
                     <div style="font-size: 10px; color: #a0aec0; margin-top: 4px; border-top: 1px solid #e2e8f0; padding-top: 4px;">${item.count} Beleg${item.count !== 1 ? 'e' : ''}</div>
