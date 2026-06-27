@@ -226,19 +226,19 @@
 
             // Gesamtbetrag: Summe aller Einzelbeträge
             const gesamtbetrag = aufwendungen.reduce((sum, auf) => sum + (auf.betrag || 0), 0);
-            document.getElementById('statGesamtbetrag').textContent = `€${gesamtbetrag.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('statGesamtbetrag').textContent = `${gesamtbetrag.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 
             // Ausstehend: Summe der ausstehend-Felder vom Backend
             // Das sind die noch ausstehenden Zahlungen von PKV und Beihilfe
             const gesamtAusstehend = aufwendungen
                 .reduce((sum, auf) => sum + (auf.berechnungen?.ausstehend || 0), 0);
-            document.getElementById('statAusstehend').textContent = `€${gesamtAusstehend.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('statAusstehend').textContent = `${gesamtAusstehend.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 
             // Eigenbehalt: Summe der eigenbehalt-Felder vom Backend
             // Das ist der Betrag, den der Patient selbst zahlen muss
             const gesamtEigenbehalt = aufwendungen
                 .reduce((sum, auf) => sum + (auf.berechnungen?.eigenbehalt || 0), 0);
-            document.getElementById('statEigenbehaltOffen').textContent = `€${gesamtEigenbehalt.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('statEigenbehaltOffen').textContent = `${gesamtEigenbehalt.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
         }
 
         // Statistiken beim Laden berechnen

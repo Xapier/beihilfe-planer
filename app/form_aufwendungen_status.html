@@ -820,17 +820,28 @@
         // HILFSFUNKTION: Währung im deutsches Format formatieren (z.B. "1.234,56 €")
         // =========================================================================
         function formatCurrency(amount) {
-            if (amount === null || amount === undefined || isNaN(amount)) {
+            try {
+                if (amount === null || amount === undefined || isNaN(amount)) {
+                    return '0,00 €';
+                }
+                const num = parseFloat(amount);
+                if (isNaN(num)) {
+                    return '0,00 €';
+                }
+                // Sichere Formatierung ohne toLocaleString
+                const fixed = num.toFixed(2);
+                const parts = fixed.split('.');
+                const integer = parts[0];
+                const decimal = parts[1];
+                
+                // Tausender-Trennzeichen
+                const formatted = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                
+                return formatted + ',' + decimal + ' €';
+            } catch (err) {
+                console.error('❌ formatCurrency Fehler:', err);
                 return '0,00 €';
             }
-            return parseFloat(amount)
-                .toLocaleString('de-DE', {
-                    style: 'currency',
-                    currency: 'EUR',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                })
-                .replace('€', '€'); // Stelle sicher, dass € hinten ist
         }
 
         // =========================================================================
@@ -1456,13 +1467,12 @@
                     if (hatFaelligkeitsWarnung) {
                         rechnungTooltip += `⚠️ Fällig in den nächsten 5 Tagen!&#10;`;
                     }
-                    rechnungTooltip += formattedBetrag;
 
                     const pkvDatum = formatDateDDMMYYYY(auf.daten?.pkv);
                     const betDatum = formatDateDDMMYYYY(auf.daten?.bet);
                     const beihilfeDatum = formatDateDDMMYYYY(auf.daten?.beihilfe);
                     
-                    // Formatiere Währungen
+                    // Formatiere Währungen BEVOR sie verwendet werden
                     const formattedBetrag = formatCurrency(auf.betrag);
                     const formattedPkvSoll = formatCurrency(berechnungen.pkvSoll || 0);
                     const formattedPkvErledigt = formatCurrency(berechnungen.pkvErledigt || 0);
@@ -1472,6 +1482,9 @@
                     const formattedBeihilfeSoll = formatCurrency(berechnungen.beihilfeSoll || 0);
                     const formattedBeihilfeErledigt = formatCurrency(berechnungen.beihilfeErledigt || 0);
                     const formattedBeihilfeAusstehend = formatCurrency(berechnungen.beihilfeAusstehend || 0);
+                    
+                    // Jetzt die Tooltip mit formattedBetrag
+                    rechnungTooltip += formattedBetrag;
 
                     return `
                         <tr onclick="editAufwendung(${auf.id})" style="cursor: pointer;">
