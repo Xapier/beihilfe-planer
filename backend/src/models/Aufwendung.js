@@ -275,7 +275,7 @@ class Aufwendung {
             betrag = ?, ausstehend = ?, eigenbehalt = ?,
             pkvSoll = ?, pkvAusstehend = ?, pkvErledigt = ?,
             beihilfeSoll = ?, beihilfeAusstehend = ?, beihilfeErledigt = ?,
-            betSoll = ?, betErledigt = ?, calculatedAt = CURRENT_TIMESTAMP
+            betSoll = ?, betErledigt = ?, calculatedAt = ?
             WHERE aufwendungId = ?`,
           [
             aufwendung.betrag,
@@ -289,6 +289,7 @@ class Aufwendung {
             berechnungen.beihilfeErledigt,
             berechnungen.betSoll,
             berechnungen.betErledigt,
+            new Date().toISOString(),
             aufwendungId
           ]
         );
