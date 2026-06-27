@@ -19,6 +19,8 @@ let db = null;
  */
 async function initDb() {
   if (db) return db;
+  
+  console.log('🔄 initDb: Öffne SQLite Datenbank...');
 
   db = await sqlite.open({
     filename: dbPath,
@@ -29,8 +31,16 @@ async function initDb() {
   await createTables();
   
   // Führe Migrationen aus
-  const { migrateLegacyCalculations } = require('./migrations');
-  await migrateLegacyCalculations();
+  console.log('🔄 Versuche Migrationen zu laden und zu starten...');
+  try {
+    const { migrateLegacyCalculations } = require('./migrations');
+    console.log('✅ Migrations Modul geladen');
+    await migrateLegacyCalculations();
+  } catch (err) {
+    console.error('❌ Fehler beim Laden der Migrationen:', err.message);
+    console.error(err.stack);
+    // Nicht werfen - System soll trotzdem starten
+  }
   
   return db;
 }

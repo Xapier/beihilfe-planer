@@ -56,11 +56,18 @@ async function migrateLegacyCalculations() {
   
   try {
     // Überprüfe ob Migration bereits gelaufen ist
-    const existingCount = await db.get(
-      'SELECT COUNT(*) as count FROM aufwendung_berechnungen'
-    );
+    let existingCount = 0;
+    try {
+      const result = await db.get(
+        'SELECT COUNT(*) as count FROM aufwendung_berechnungen'
+      );
+      existingCount = result?.count || 0;
+    } catch (err) {
+      // Tabelle existiert noch nicht - das ist OK
+      console.log('🔄 Aufwendung_berechnungen Tabelle existiert noch nicht, wird erstellt...');
+    }
     
-    if (existingCount.count > 0) {
+    if (existingCount > 0) {
       console.log('✅ Migration 001 bereits durchgeführt, überspringe...');
       return;
     }
@@ -130,8 +137,9 @@ async function migrateLegacyCalculations() {
     console.log(`✅ Migration 001 abgeschlossen: ${inserted} Records eingefügt, ${errors} Fehler`);
 
   } catch (err) {
-    console.error('❌ Migration 001 fehlgeschlagen:', err);
-    throw err;
+    console.error('❌ Migration 001 fehlgeschlagen:', err.message);
+    console.error(err.stack);
+    // Nicht werfen - System soll weiterarbeiten
   }
 }
 
