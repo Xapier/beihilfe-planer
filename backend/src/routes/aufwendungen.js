@@ -121,4 +121,95 @@ router.delete('/:id', async (req, res, next) => {
   }
 });
 
+/**
+ * GET /api/aufwendungen/debug/calc/:id
+ * Debug: Zeige rohe Daten aus aufwendung_berechnungen Tabelle
+ */
+router.get('/debug/calc/:id', async (req, res, next) => {
+  try {
+    const { getDb } = require('../db/database');
+    const db = getDb();
+    
+    const result = await db.get(`
+      SELECT 
+        a.id,
+        a.betrag,
+        a.patientId,
+        b.eigenbehalt,
+        b.ausstehend,
+        b.pkvSoll,
+        b.pkvErledigt,
+        b.pkvAusstehend,
+        b.beihilfeSoll,
+        b.beihilfeErledigt,
+        b.beihilfeAusstehend,
+        b.betSoll,
+        b.betErledigt,
+        b.calculatedAt
+      FROM aufwendungen a
+      LEFT JOIN aufwendung_berechnungen b ON a.id = b.aufwendungId
+      WHERE a.id = ?
+    `, [req.params.id]);
+    
+    res.json(result || { error: 'Aufwendung nicht gefunden' });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/aufwendungen/debug/all-calcs
+ * Debug: Zeige erste 5 Berechnungen aus Tabelle
+ */
+router.get('/debug/all-calcs', async (req, res, next) => {
+  try {
+    const { getDb } = require('../db/database');
+    const db = getDb();
+    
+    const results = await db.all(`
+      SELECT 
+        a.id,
+        a.betrag,
+        b.eigenbehalt,
+        b.pkvErledigt,
+        b.beihilfeErledigt,
+        b.calculatedAt
+      FROM aufwendungen a
+      LEFT JOIN aufwendung_berechnungen b ON a.id = b.aufwendungId
+      LIMIT 5
+    `);
+    
+    res.json(results);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/aufwendungen/debug/recalculate
+ * Debug: Lösche alle Berechnungen und triggere Neuberechnung beim nächsten Server-Restart
+ */
+router.post('/debug/recalculate', async (req, res, next) => {
+  try {
+    const { getDb } = require('../db/database');
+    const db = getDb();
+    
+    // Lösche alle Berechnungen
+    await db.run('DELETE FROM aufwendung_berechnungen');
+    
+    // Triggere Migration
+    const { migrateLegacyCalculations } = require('../db/migrations');
+    await migrateLegacyCalculations();
+    
+    const count = await db.get('SELECT COUNT(*) as count FROM aufwendung_berechnungen');
+    res.json({ 
+      success: true, 
+      message: `Neuberechnung abgeschlossen: ${count.count} Records`,
+      count: count.count 
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

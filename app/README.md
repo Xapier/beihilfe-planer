@@ -63,24 +63,33 @@ Hauptformular der Anwendung.
 
 ### 5-Säulen-Statusverwaltung
 
-Jede Aufwendung hat 5 unabhängige Status-Spalten:
+Jede Aufwendung hat 4 unabhängige Status-Spalten (plus Rechnung):
 
-| Säule | Beschreibung | Status-Werte |
-|-------|-------------|-------------||
-| Rechnung | Originalrechnung | offen → eingegangen → bezahlt |
-| PKV | Private Krankenversicherung | offen → eingereicht → erstattet / entfällt |
-| BET | Beihilfeergänzungstarif | entfällt (Standard) oder offen → eingereicht → erstattet |
-| Beihilfe | Staatliche Beihilfe | offen → eingereicht → erstattet / entfällt |
-| BRE | Beitragsrückerstattung der PKV | offen → erstattet / entfällt |
+| Säule | Status-Werte | Beschreibung |
+|-------|------------|-------------|
+| Rechnung | offen → eingegangen → bezahlt | Originalrechnung |
+| PKV | offen → eingereicht → BRE offen → BRE erstattet → erstattet → entfällt | Private Krankenversicherung (mit Beitragsrückerstattung) |
+| Beihilfeergänzung (BET) | offen → eingereicht → erstattet / entfällt | Beamten-Ergänzungs-Tarif (Standard: entfällt) |
+| Beihilfe | offen → eingereicht → erstattet → entfällt | Staatliche Beihilfe |
+
+**Hinweis:** BRE-Status sind nur für PKV relevant. Beihilfe und BET haben keine BRE-Logik.
+
+### Berechnung (Backend-API)
+
+Frontend zeigt drei berechnete Spalten an (alle vom Backend berechnet):
+
+| Spalte | Formel | Bedeutung |
+|--------|--------|-----------|
+| Eigenbehalt | Betrag - PKV erl. - Beihilfe erl. *nur wenn entfällt* | Patient zahlt selbst |
+| Ausstehend | PKV ausstehend + Beihilfe ausstehend | Noch zu erwartende Erstattungen |
+| 4-Säulen Status | 5 Status-Felder | Farbig kodiert |
 
 **Farbkodierung:**
-- Rot — offen
-- Gelb — eingereicht / in Bearbeitung
-- Grün — erledigt / erstattet
-- Grau — nicht zutreffend (N/A)
-- Lila — überfällig
-
-Zu jeder Säule kann ein tatsächlicher Erstattungsbetrag erfasst werden.
+- 🔴 Rot — offen
+- 🟡 Gelb — eingereicht / BRE offen / in Bearbeitung
+- 🟢 Grün — erledigt / erstattet
+- ⚫ Grau — entfällt / nicht zutreffend
+- 🟣 Lila — überfällig
 
 ## Deployment
 

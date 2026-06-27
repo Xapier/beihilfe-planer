@@ -19,6 +19,8 @@ let db = null;
  */
 async function initDb() {
   if (db) return db;
+  
+  console.log('🔄 initDb: Öffne SQLite Datenbank...');
 
   db = await sqlite.open({
     filename: dbPath,
@@ -27,6 +29,18 @@ async function initDb() {
 
   await db.exec('PRAGMA foreign_keys = ON');
   await createTables();
+  
+  // Führe Migrationen aus
+  console.log('🔄 Versuche Migrationen zu laden und zu starten...');
+  try {
+    const { migrateLegacyCalculations } = require('./migrations');
+    console.log('✅ Migrations Modul geladen');
+    await migrateLegacyCalculations();
+  } catch (err) {
+    console.error('❌ Fehler beim Laden der Migrationen:', err.message);
+    console.error(err.stack);
+    // Nicht werfen - System soll trotzdem starten
+  }
   
   return db;
 }
@@ -96,6 +110,37 @@ async function createTables() {
     CREATE INDEX IF NOT EXISTS idx_aufwendungen_patientId ON aufwendungen(patientId);
     CREATE INDEX IF NOT EXISTS idx_aufwendungen_datum ON aufwendungen(datum);
     CREATE INDEX IF NOT EXISTS idx_aufwendungen_faelligkeitsDatum ON aufwendungen(faelligkeitsDatum);
+
+    -- Berechnete Werte Tabelle (zentrale Berechnung)
+    CREATE TABLE IF NOT EXISTS aufwendung_berechnungen (
+      id TEXT PRIMARY KEY,
+      aufwendungId INTEGER NOT NULL UNIQUE,
+      
+      -- Hauptwerte
+      betrag REAL NOT NULL,
+      ausstehend REAL NOT NULL,
+      eigenbehalt REAL NOT NULL,
+      
+      -- Komponenten (für Debugging/Detail-Ansicht)
+      pkvSoll REAL,
+      pkvAusstehend REAL,
+      pkvErledigt REAL,
+      beihilfeSoll REAL,
+      beihilfeAusstehend REAL,
+      beihilfeErledigt REAL,
+      betSoll REAL,
+      betErledigt REAL,
+      
+      -- Audit
+      lastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP,
+      calculatedAt DATETIME,
+      
+      FOREIGN KEY (aufwendungId) REFERENCES aufwendungen(id) ON DELETE CASCADE
+    );
+
+    -- Index für schnelle Joins
+    CREATE INDEX IF NOT EXISTS idx_berechnungen_aufwendungId 
+      ON aufwendung_berechnungen(aufwendungId);
   `);
 
   console.log('✅ Datenbanktabellen initialisiert');

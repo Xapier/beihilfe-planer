@@ -210,7 +210,7 @@
     <script src="api.js"></script>
     <script>
         // =========================================================================
-        // DASHBOARD STATISTIKEN BERECHNEN
+        // DASHBOARD STATISTIKEN BERECHNEN - mit Backend-Berechnungen
         // =========================================================================
         async function updateDashboardStats() {
             const [patients, aufwendungen] = await Promise.all([
@@ -224,44 +224,21 @@
             // Anzahl Aufwendungen
             document.getElementById('statAufwendungen').textContent = aufwendungen.length;
 
-            // Gesamtbetrag berechnen
+            // Gesamtbetrag: Summe aller Einzelbeträge
             const gesamtbetrag = aufwendungen.reduce((sum, auf) => sum + (auf.betrag || 0), 0);
             document.getElementById('statGesamtbetrag').textContent = `€${gesamtbetrag.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-            // Ausstehenden Betrag berechnen (nur von Aufwendungen mit noch offenen Kostenträger-Status)
-            // Ausstehend = Eigenbehalt von Aufwendungen, bei denen mindestens ein Kostenträger noch nicht "erledigt" oder "nicht-noetig" ist
+            // Ausstehend: Summe der ausstehend-Felder vom Backend
+            // Das sind die noch ausstehenden Zahlungen von PKV und Beihilfe
             const gesamtAusstehend = aufwendungen
-                .filter(auf => {
-                    // Prüfe ob mindestens ein Kostenträger noch bearbeitet wird
-                    const pkvPending = auf.status.pkv !== 'erledigt' && auf.status.pkv !== 'nicht-noetig';
-                    const beihilfePending = auf.status.beihilfe !== 'erledigt' && auf.status.beihilfe !== 'nicht-noetig';
-                    const betPending = auf.status.bet !== 'erledigt' && auf.status.bet !== 'nicht-noetig';
-                    
-                    return pkvPending || beihilfePending || betPending;
-                })
-                .reduce((sum, auf) => {
-                    const summeZahlungen = (auf.betraege?.pkv || 0) + (auf.betraege?.beihilfe || 0) + (auf.betraege?.bet || 0);
-                    return sum + Math.max(0, auf.betrag - summeZahlungen);
-                }, 0);
+                .reduce((sum, auf) => sum + (auf.berechnungen?.ausstehend || 0), 0);
             document.getElementById('statAusstehend').textContent = `€${gesamtAusstehend.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-            // Offene Eigenbehalte berechnen (nur von nicht-erledigten Aufwendungen)
-            // Eine Aufwendung ist erledigt, wenn ALLE ihre Status "erledigt" sind
-            const offeneEigenbehalt = aufwendungen
-                .filter(auf => {
-                    // Prüfe ob mindestens ein Status NICHT "erledigt" ist
-                    const nichtErledigt = 
-                        auf.status.rechnung !== 'erledigt' ||
-                        auf.status.pkv !== 'erledigt' ||
-                        auf.status.bet !== 'erledigt' ||
-                        auf.status.beihilfe !== 'erledigt';
-                    return nichtErledigt;
-                })
-                .reduce((sum, auf) => {
-                    const summeZahlungen = (auf.betraege?.pkv || 0) + (auf.betraege?.beihilfe || 0) + (auf.betraege?.bet || 0);
-                    return sum + Math.max(0, auf.betrag - summeZahlungen);
-                }, 0);
-            document.getElementById('statEigenbehaltOffen').textContent = `€${offeneEigenbehalt.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            // Eigenbehalt: Summe der eigenbehalt-Felder vom Backend
+            // Das ist der Betrag, den der Patient selbst zahlen muss
+            const gesamtEigenbehalt = aufwendungen
+                .reduce((sum, auf) => sum + (auf.berechnungen?.eigenbehalt || 0), 0);
+            document.getElementById('statEigenbehaltOffen').textContent = `€${gesamtEigenbehalt.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
         // Statistiken beim Laden berechnen
