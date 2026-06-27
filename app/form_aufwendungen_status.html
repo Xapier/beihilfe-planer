@@ -1595,6 +1595,28 @@
         // =========================================================================
         // AUTO-SAVE FUNKTION
         // =========================================================================
+        // =========================================================================
+        // VALIDIERUNGSFUNKTION FÜR PFLICHTFELDER
+        // =========================================================================
+        function validateRequiredFields() {
+            const missingFields = [];
+            
+            const patientId = document.getElementById('patient').value;
+            const datum = document.getElementById('aufDatum').value;
+            const faelligkeitsDatum = document.getElementById('faelligkeitsDatum').value;
+            const aufTyp = document.getElementById('aufTyp').value;
+            const betrag = parseFloat(document.getElementById('rechnungsBetrag').value);
+            
+            // Prüfe Pflichtfelder und sammle fehlende
+            if (!patientId) missingFields.push('👤 Patient');
+            if (!datum) missingFields.push('📅 Aufwendungsdatum');
+            if (!faelligkeitsDatum) missingFields.push('📅 Fälligkeitsdatum');
+            if (!aufTyp) missingFields.push('📋 Aufwendungstyp');
+            if (!betrag || betrag <= 0) missingFields.push('💶 Rechnungsbetrag');
+            
+            return missingFields;
+        }
+
         async function autoSaveAufwendung() {
             // Nicht speichern während Formulardaten geladen werden
             if (isLoadingForm) {
@@ -1632,12 +1654,11 @@
 
             const payload = { patientId, datum, faelligkeitsDatum, kontaktId, aufTyp, beschreibung, rechnungsNr, betrag, status, betraege, daten };
 
-            // Nur speichern wenn alle Pflichtfelder gefüllt sind (nur bei neuen oder existierenden Aufwendungen)
-            if (!patientId || !datum || !faelligkeitsDatum || !aufTyp || !betrag) {
-                // Trotzdem die Tabelle aktualisieren, damit der Benutzer Feedback sieht
-                aufwendungen = await API.aufwendungen.getAll();
-                contacts = await API.contacts.getAll();
-                renderTable();
+            // Validiere Pflichtfelder
+            const missingFields = validateRequiredFields();
+            if (missingFields.length > 0) {
+                // Zeige Fehler-Popup mit allen fehlenden Feldern
+                alert('⚠️ Bitte alle Pflichtfelder ausfüllen:\n\n' + missingFields.join('\n'));
                 return;
             }
 
