@@ -1336,12 +1336,9 @@
                     const beschreibung = auf.beschreibung || '-';
                     const rechnungsNr = auf.rechnungsNr || '-';
 
-                    // Beträge für Tooltip berechnen
-                    const betraege = calculateAmounts(patient, auf);
-                    
-                    // Eigenbehalt berechnen
-                    const summeZahlungen = betraege.pkvIst + betraege.beihilfeIst + betraege.betIst;
-                    const eigenbehalt = Math.max(0, auf.betrag - summeZahlungen);
+                    // Nutze berechnungen vom API statt lokale Berechnung
+                    const berechnungen = auf.berechnungen || {};
+                    const eigenbehalt = berechnungen.eigenbehalt || 0;
                     
                     // Fälligkeitswarnung prüfen für Rechnung (R)
                     const hatFaelligkeitsWarnung = getFälligkeitsstatus(auf.faelligkeitsDatum, auf.status.rechnung);
@@ -1374,17 +1371,17 @@
                             </td>
                             <td class="status-col">
                                 <div class="status-cell">
-                                    <div class="status-indicator" data-status="${auf.status.pkv}" title="PKV: ${auf.status.pkv}&#10;Datum: ${auf.daten?.pkv ? new Date(auf.daten.pkv).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${betraege.pkvSoll.toFixed(2)}&#10;Ist: €${betraege.pkvIst.toFixed(2)}&#10;Offen: €${betraege.pkvOffen.toFixed(2)}">PKV</div>
+                                    <div class="status-indicator" data-status="${auf.status.pkv}" title="PKV: ${auf.status.pkv}&#10;Datum: ${auf.daten?.pkv ? new Date(auf.daten.pkv).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${berechnungen.pkvSoll?.toFixed(2) || '0.00'}&#10;Erledigt: €${berechnungen.pkvErledigt?.toFixed(2) || '0.00'}&#10;Offen: €${berechnungen.pkvAusstehend?.toFixed(2) || '0.00'}">PKV</div>
                                 </div>
                             </td>
                             <td class="status-col">
                                 <div class="status-cell">
-                                    <div class="status-indicator" data-status="${auf.status.bet}" title="BET: ${auf.status.bet}&#10;Datum: ${auf.daten?.bet ? new Date(auf.daten.bet).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${betraege.betSoll.toFixed(2)}&#10;Ist: €${betraege.betIst.toFixed(2)}&#10;Offen: €${betraege.betOffen.toFixed(2)}">BET</div>
+                                    <div class="status-indicator" data-status="${auf.status.bet}" title="BET: ${auf.status.bet}&#10;Datum: ${auf.daten?.bet ? new Date(auf.daten.bet).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${berechnungen.betSoll?.toFixed(2) || '0.00'}&#10;Erledigt: €${berechnungen.betErledigt?.toFixed(2) || '0.00'}&#10;Offen: €0.00">BET</div>
                                 </div>
                             </td>
                             <td class="status-col">
                                 <div class="status-cell">
-                                    <div class="status-indicator" data-status="${auf.status.beihilfe}" title="Beihilfe: ${auf.status.beihilfe}&#10;Datum: ${auf.daten?.beihilfe ? new Date(auf.daten.beihilfe).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${betraege.beihilfeSoll.toFixed(2)}&#10;Ist: €${betraege.beihilfeIst.toFixed(2)}&#10;Offen: €${betraege.beihilfeOffen.toFixed(2)}">Beihilfe</div>
+                                    <div class="status-indicator" data-status="${auf.status.beihilfe}" title="Beihilfe: ${auf.status.beihilfe}&#10;Datum: ${auf.daten?.beihilfe ? new Date(auf.daten.beihilfe).toLocaleDateString('de-DE') : '-'}&#10;Soll: €${berechnungen.beihilfeSoll?.toFixed(2) || '0.00'}&#10;Erledigt: €${berechnungen.beihilfeErledigt?.toFixed(2) || '0.00'}&#10;Offen: €${berechnungen.beihilfeAusstehend?.toFixed(2) || '0.00'}">Beihilfe</div>
                                 </div>
                             </td>
                             <td class="actions-col">
@@ -1400,10 +1397,8 @@
             let summeEigenbehalt = 0;
             
             filtered.forEach(auf => {
-                const patient = patients.find(p => p.id == auf.patientId);
-                const betraege = calculateAmounts(patient, auf);
-                const summeZahlungen = betraege.pkvIst + betraege.beihilfeIst + betraege.betIst;
-                const eigenbehalt = Math.max(0, auf.betrag - summeZahlungen);
+                const berechnungen = auf.berechnungen || {};
+                const eigenbehalt = berechnungen.eigenbehalt || 0;
                 
                 summeBetrag += auf.betrag;
                 summeEigenbehalt += eigenbehalt;
@@ -1447,9 +1442,8 @@
                     };
                 }
                 
-                const betraege = calculateAmounts(patient, auf);
-                const summeZahlungen = betraege.pkvIst + betraege.beihilfeIst + betraege.betIst;
-                const eigenbehalt = Math.max(0, auf.betrag - summeZahlungen);
+                const berechnungen = auf.berechnungen || {};
+                const eigenbehalt = berechnungen.eigenbehalt || 0;
                 
                 breakdown[patientKey].betrag += auf.betrag;
                 breakdown[patientKey].eigenbehalt += eigenbehalt;
