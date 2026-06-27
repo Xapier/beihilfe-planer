@@ -28,13 +28,16 @@ function calculateAmounts(patient, auf) {
   // Ausstehend: PKV/Beihilfe zählen nur, wenn Status "offen" oder "eingereicht"
   const pkvAusstehend = (auf.pkvStatus === 'offen' || auf.pkvStatus === 'eingereicht') ? pkvSoll : 0;
   const beihilfeAusstehend = (auf.beihilfeStatus === 'offen' || auf.beihilfeStatus === 'eingereicht') ? beihilfeSoll : 0;
-  const ausstehend = Math.max(0, betrag - pkvAusstehend - beihilfeAusstehend);
+  const ausstehend = pkvAusstehend + beihilfeAusstehend;
 
-  // Eigenbehalt: PKV wird abgezogen, wenn Status NICHT "offen", "eingereicht", "BRE offen", "BRE erstattet"
-  // Beihilfe wird abgezogen, wenn Status NICHT "offen", "eingereicht"
-  const pkvErledigt = !(auf.pkvStatus === 'offen' || auf.pkvStatus === 'eingereicht' || auf.pkvStatus === 'BRE offen' || auf.pkvStatus === 'BRE erstattet') ? pkvSoll : 0;
-  const beihilfeErledigt = !(auf.beihilfeStatus === 'offen' || auf.beihilfeStatus === 'eingereicht') ? beihilfeSoll : 0;
-  const eigenbehalt = Math.max(0, betrag - pkvErledigt - beihilfeErledigt);
+  // Erledigt: PKV/Beihilfe werden abgezogen, wenn Status = "erstattet"
+  const pkvErledigt = auf.pkvStatus === 'erstattet' ? pkvSoll : 0;
+  const beihilfeErledigt = auf.beihilfeStatus === 'erstattet' ? beihilfeSoll : 0;
+  
+  // Eigenbehalt: Nur berechnet wenn PKV Status = "entfällt" ODER Beihilfe Status = "entfällt"
+  const eigenbehalt = (auf.pkvStatus === 'entfällt' || auf.beihilfeStatus === 'entfällt') 
+    ? Math.max(0, betrag - pkvErledigt - beihilfeErledigt) 
+    : 0;
 
   // BET wird nicht abgezogen (immer "entfällt")
   const betErledigt = 0;
