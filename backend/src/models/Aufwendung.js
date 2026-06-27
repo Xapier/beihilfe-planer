@@ -269,7 +269,7 @@ class Aufwendung {
             betrag = ?, ausstehend = ?, eigenbehalt = ?,
             pkvSoll = ?, pkvAusstehend = ?, pkvErledigt = ?,
             beihilfeSoll = ?, beihilfeAusstehend = ?, beihilfeErledigt = ?,
-            betSoll = ?, betErledigt = ?, lastUpdated = CURRENT_TIMESTAMP
+            betSoll = ?, betErledigt = ?, calculatedAt = CURRENT_TIMESTAMP
             WHERE aufwendungId = ?`,
           [
             aufwendung.betrag,
