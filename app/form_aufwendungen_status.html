@@ -1595,6 +1595,8 @@
         // =========================================================================
         // AUTO-SAVE FUNKTION
         // =========================================================================
+        let validationAlertShown = false; // Trackt ob Validierungs-Alert bereits gezeigt wurde
+        
         // =========================================================================
         // VALIDIERUNGSFUNKTION FÜR PFLICHTFELDER
         // =========================================================================
@@ -1654,13 +1656,23 @@
 
             const payload = { patientId, datum, faelligkeitsDatum, kontaktId, aufTyp, beschreibung, rechnungsNr, betrag, status, betraege, daten };
 
-            // Validiere Pflichtfelder
+            // Validiere Pflichtfelder - nur EINMALIG Alert zeigen
             const missingFields = validateRequiredFields();
             if (missingFields.length > 0) {
-                // Zeige Fehler-Popup mit allen fehlenden Feldern
-                alert('⚠️ Bitte alle Pflichtfelder ausfüllen:\n\n' + missingFields.join('\n'));
+                // Zeige Alert EINMALIG
+                if (!validationAlertShown) {
+                    alert('⚠️ Bitte folgende Pflichtfelder ausfüllen:\n\n' + missingFields.join('\n'));
+                    validationAlertShown = true;
+                }
+                // Trotzdem Tabelle aktualisieren damit Nutzer Feedback sieht
+                aufwendungen = await API.aufwendungen.getAll();
+                contacts = await API.contacts.getAll();
+                renderTable();
                 return;
             }
+            
+            // Wenn alle Felder gefüllt sind: Reset für nächste Session
+            validationAlertShown = false;
 
             try {
                 if (editingId) {
