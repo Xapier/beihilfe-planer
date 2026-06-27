@@ -34,8 +34,11 @@ function calculateAmounts(patient, auf) {
   const pkvErledigt = auf.pkvStatus === 'erstattet' ? pkvSoll : 0;
   const beihilfeErledigt = auf.beihilfeStatus === 'erstattet' ? beihilfeSoll : 0;
   
-  // Eigenbehalt: Nur berechnet wenn PKV Status = "entfällt" ODER Beihilfe Status = "entfällt"
-  const eigenbehalt = (auf.pkvStatus === 'entfällt' || auf.beihilfeStatus === 'entfällt') 
+  // Eigenbehalt: Berechnet wenn PKV = "entfällt" ODER "BRE offen" (zeige ausstehende BRE-Summen pro Patient)
+  // ODER wenn Beihilfe = "entfällt"
+  const eigenbehalt = (auf.pkvStatus === 'entfällt' || 
+                       auf.pkvStatus === 'BRE offen' ||
+                       auf.beihilfeStatus === 'entfällt') 
     ? Math.max(0, betrag - pkvErledigt - beihilfeErledigt) 
     : 0;
 
