@@ -305,4 +305,4 @@ Für die Dev-Umgebung können Beispieldaten geladen werden – siehe [Datenbankd
 
 - [Root README](../README.md) - Allgemeiner Überblick
 - [Database README](../database/README.md) - Datenbankschema
-- [Frontend README](../app/README.md) - UI & 5-Säulen-System
+- [Frontend README](../app/README.md) - UI & 3-Säulen-System

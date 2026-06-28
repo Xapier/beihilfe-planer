@@ -43,12 +43,10 @@ CREATE TABLE IF NOT EXISTS contacts (
 -- ============================================================================
 -- 3. AUFWENDUNGEN (Unified: Rechnungen, Fahrtkosten, KH-Kosten)
 -- ============================================================================
--- 5-Säulen-System für Beihilfeabrechnung:
+-- 3-Säulen-System für Beihilfeabrechnung:
 --   • Rechnung: Ausgangsdokument
 --   • PKV: Private Krankenversicherung
---   • BET: Beamten-Ergänzungs-Tarif
 --   • Beihilfe: Staatliche Beihilfe
---   • Pflege: Pflegezusatz
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS aufwendungen (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,10 +59,9 @@ CREATE TABLE IF NOT EXISTS aufwendungen (
   rechnungsNr TEXT,
   betrag REAL NOT NULL,
   
-  -- 5-Säulen Status
+  -- 3-Säulen Status
   rechnungStatus TEXT DEFAULT 'offen',     -- offen, eingegangen, bezahlt
   pkvStatus TEXT DEFAULT 'offen',          -- offen, eingereicht, erstattet, abgelehnt
-  betStatus TEXT DEFAULT 'offen',          -- offen, eingereicht, erstattet, abgelehnt
   beihilfeStatus TEXT DEFAULT 'offen',     -- offen, eingereicht, erstattet, abgelehnt
   -- Tatsächliche Beträge (berechnet)
   pkvBetrag REAL DEFAULT 0,

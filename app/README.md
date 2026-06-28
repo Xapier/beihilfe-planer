@@ -73,7 +73,7 @@ Hauptformular der Anwendung.
 | Rechnungsnummer | nein | Belegnummer |
 | Betrag | ja | Gesamtbetrag in € |
 
-### 5-Säulen-Statusverwaltung
+### 3-Säulen-Statusverwaltung
 
 Jede Aufwendung hat 4 unabhängige Status-Spalten (plus Rechnung):
 
