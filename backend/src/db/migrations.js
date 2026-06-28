@@ -46,9 +46,20 @@ function calculateAmounts(patient, auf) {
     ? (betTatsaechlich > 0 ? betTatsaechlich : 0)
     : 0;
 
-  // Eigenbehalt: universelle Formel – was weder erstattet noch noch ausstehend ist
-  // Deckt ab: entfällt-Anteile, BRE offen, Teilerstattungen (Soll - Tatsächlich)
-  const eigenbehalt = Math.max(0, betrag - pkvErledigt - beihilfeErledigt - betErledigt - ausstehend);
+  // Eigenbehalt: explizit status-basiert
+  // 1. Vollständige Ablehnung: pkvSoll/beihilfeSoll geht an den Patienten
+  const pkvEntfaelltAnteil = (auf.pkvStatus === 'entfällt' || auf.pkvStatus === 'BRE offen' || auf.pkvStatus === 'abgelehnt')
+    ? pkvSoll : 0;
+  const beihilfeEntfaelltAnteil = (auf.beihilfeStatus === 'entfällt' || auf.beihilfeStatus === 'abgelehnt')
+    ? beihilfeSoll : 0;
+
+  // 2. Teilerstattung: Differenz Soll - Tatsächlich geht an den Patienten
+  const pkvDifferenz = auf.pkvStatus === 'erstattet' && pkvTatsaechlich > 0
+    ? Math.max(0, pkvSoll - pkvTatsaechlich) : 0;
+  const beihilfeDifferenz = auf.beihilfeStatus === 'erstattet' && beihilfeTatsaechlich > 0
+    ? Math.max(0, beihilfeSoll - beihilfeTatsaechlich) : 0;
+
+  const eigenbehalt = pkvEntfaelltAnteil + beihilfeEntfaelltAnteil + pkvDifferenz + beihilfeDifferenz;
 
   return {
     pkvSoll, pkvAusstehend, pkvErledigt, pkvTatsaechlich,
