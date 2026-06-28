@@ -108,12 +108,12 @@ Detaillierte Anleitung: [migrate/MIGRATION_GUIDE.md](migrate/MIGRATION_GUIDE.md)
 
 Eine Live-Demo-Instanz mit Beispieldaten ist unter **Port 8081** verfügbar:
 
-```bash
-# Demo auf dem Server starten
-ssh root@192.168.188.61
-cd /opt/beihilfe-demo
-docker compose up -d
-```
+Demo starten (lokal oder auf einem Server):
+- Optional: SSH auf den Demo-Host: `ssh <user>@<demo-host>`
+- `cd /opt/beihilfe-demo`
+- `docker compose -f docker-compose.demo.yml up -d`
+
+**Demo-URL:** `http://<demo-host>:8081`
 
 **Demo-URL:** `http://192.168.188.61:8081`
 
