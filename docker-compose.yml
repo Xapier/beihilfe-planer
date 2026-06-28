@@ -31,5 +31,14 @@ services:
 volumes:
   # Persistentes Volume für SQLite-Datenbank
   # Datenbank überlebt Container-Neustarts und Updates
+  # WICHTIG: Volume-Name beinhaltet COMPOSE_PROJECT_NAME um DEV/PROD zu trennen
+  # DEV: beihilfe-dev_db_data
+  # PROD: beihilfe_db_data
+  #
+  # SICHERHEIT: Die ":?"-Syntax erzwingt, dass COMPOSE_PROJECT_NAME gesetzt ist.
+  # Ohne explizit gesetzte Variable WEIGERT sich docker compose zu starten und
+  # kann somit niemals versehentlich ein falsches/leeres Volume erzeugen, das
+  # die produktive Datenbank verdeckt.
   db_data:
     driver: local
+    name: ${COMPOSE_PROJECT_NAME:?FEHLER - COMPOSE_PROJECT_NAME muss explizit gesetzt sein (beihilfe=PROD, beihilfe-dev=DEV). Niemals docker compose ohne diese Variable ausfuehren!}_db_data
