@@ -104,18 +104,59 @@ node migrate_bop_corrected.js "<Pfad zur BOP_SQL_Daten.s3db>" "./beihilfe-migrat
 Anschließend die erzeugte `beihilfe-migrated.db` in das Docker-Volume einspielen.  
 Detaillierte Anleitung: [migrate/MIGRATION_GUIDE.md](migrate/MIGRATION_GUIDE.md)
 
-### Demo-Umgebung
+### Dev/Prod-Deployment (getrennte LXCs)
 
-Eine Live-Demo-Instanz mit Beispieldaten ist unter **Port 8081** verfügbar:
+Die Anwendung wird in zwei getrennten Proxmox-LXCs betrieben – jeweils mit **eigener IP**:
 
-Demo starten (lokal oder auf einem Server):
-- Optional: SSH auf den Demo-Host: `ssh <user>@<demo-host>`
-- `cd /opt/beihilfe-demo`
-- `docker compose -f docker-compose.demo.yml up -d`
+| Umgebung | Host | NODE_ENV |
+|----------|------|----------|
+| **Production** | `192.168.188.61` | `production` |
+| **Development** | eigene Dev-IP | `development` |
 
-**Demo-URL:** `http://<demo-host>:8081`
+Auf beiden LXCs liegt **dieselbe** `docker-compose.yml`. Maschinenspezifische Werte (Ports, Umgebung, Projektname) stehen in einer lokalen `.env`-Datei, die **nicht** in Git eingecheckt wird.
 
-**Demo-URL:** `http://192.168.188.61:8081`
+**Einrichtung pro LXC (einmalig):**
+
+```bash
+git clone https://github.com/Xapier/beihilfe-planer.git
+cd beihilfe-planer
+cp .env.example .env
+# .env an die jeweilige Umgebung anpassen (siehe unten)
+```
+
+**`.env` auf dem PROD-LXC:**
+```bash
+COMPOSE_PROJECT_NAME=beihilfe-prod
+NODE_ENV=production
+BACKEND_PORT=3000
+FRONTEND_PORT=80
+```
+
+**`.env` auf dem DEV-LXC:**
+```bash
+COMPOSE_PROJECT_NAME=beihilfe-dev
+NODE_ENV=development
+BACKEND_PORT=3000
+FRONTEND_PORT=80
+```
+
+**Deployment – identischer Befehl auf beiden LXCs:**
+```bash
+cd /opt/beihilfe-planer
+git pull
+docker compose up -d --build
+```
+
+Da die LXCs getrennte IPs haben, können beide intern dieselben Ports (80/3000) verwenden. Es gibt keinen impliziten „falschen“ Default – auf jedem Host existiert nur seine eigene `.env` und damit nur seine eigene Umgebung.
+
+### Demo-Beispieldaten
+
+Für die Dev-Umgebung stehen realistische Beispieldaten zur Verfügung: [`database/schema/02_demo_seed.sql`](database/schema/02_demo_seed.sql)
+
+```bash
+sqlite3 beihilfe.db < database/schema/01_core_tables.sql
+sqlite3 beihilfe.db < database/schema/02_demo_seed.sql
+```
 
 **Beispieldaten:**
 - **3 Patienten:** Max Mustermann (50/50), Erika Mustermann (30/70), Lukas Mustermann (20/80)
@@ -127,7 +168,7 @@ Demo starten (lokal oder auf einem Server):
 - Ausstehend: **2.073,40 €**
 - Eigenbehalt: **2.073,40 €**
 
-Die Demo-Umgebung wird separat betrieben und beeinträchtigt nicht die Production-Datenbank auf Port 80.
+Die Dev-Umgebung läuft in einem eigenen LXC und beeinträchtigt nicht die Production-Datenbank.
 
 ## Benutzeroberfläche - User Guide
 
@@ -142,7 +183,7 @@ Die Demo-Umgebung wird separat betrieben und beeinträchtigt nicht die Productio
 
 ![Dashboard](docs/screenshots/dashboard.png)
 
-> **Live-Demo-Daten:** 3 Patienten (Mustermann-Familie), 12 Aufwendungen, 4.549,20 € Gesamtbetrag. Siehe Demo unter [http://192.168.188.61:8081](http://192.168.188.61:8081)
+> **Demo-Beispieldaten:** 3 Patienten (Mustermann-Familie), 12 Aufwendungen, 4.549,20 € Gesamtbetrag. Siehe Dev-Umgebung mit [`02_demo_seed.sql`](database/schema/02_demo_seed.sql).
 
 **Formatierung:**
 - Alle Währungen in deutschem Format: `1.234,56 €`

@@ -5,26 +5,26 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: beihilfe-backend
+    container_name: ${COMPOSE_PROJECT_NAME:-beihilfe}-backend
     restart: unless-stopped
     environment:
-      NODE_ENV: production
+      NODE_ENV: ${NODE_ENV:-production}
       PORT: 3000
       DB_PATH: /data/beihilfe.db
     volumes:
       - db_data:/data
     ports:
-      - "3000:3000"
+      - "${BACKEND_PORT:-3000}:3000"
 
   # Frontend: nginx mit statischen HTML/CSS/JS Dateien
   frontend:
     build:
       context: .
       dockerfile: ./frontend/Dockerfile
-    container_name: beihilfe-frontend
+    container_name: ${COMPOSE_PROJECT_NAME:-beihilfe}-frontend
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "${FRONTEND_PORT:-80}:80"
     depends_on:
       - backend
 

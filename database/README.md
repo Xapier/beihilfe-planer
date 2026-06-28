@@ -206,11 +206,9 @@ Verschiedene Aufwendungen mit unterschiedlichen Status-Kombinationen:
 # Demo-Datenbank lokal erstellen
 sqlite3 demo.db < database/schema/01_core_tables.sql
 sqlite3 demo.db < database/schema/02_demo_seed.sql
-
-# Oder im Docker mit separatem docker-compose.demo.yml:
-docker compose -f docker-compose.demo.yml up -d
-# Demo verfügbar unter: http://localhost:8081
 ```
 
-Die Demo-Umgebung wird separat betrieben und beeinträchtigt nicht die Production-Datenbank.
+Diese Beispieldaten werden typischerweise im **Development-LXC** geladen. Prod und Dev laufen in getrennten Proxmox-LXCs – Details siehe [Dev/Prod-Deployment](../README.md#devprod-deployment-getrennte-lxcs).
+
+Die Dev-Umgebung läuft separat und beeinträchtigt nicht die Production-Datenbank.
 

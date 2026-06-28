@@ -267,26 +267,37 @@ Berechnungen sind in `aufwendung_berechnungen` gecacht → nur einmalige Berechn
 
 ## Deployment
 
-### Production
+Prod und Dev laufen in **getrennten Proxmox-LXCs** mit eigener IP. Auf beiden liegt dieselbe `docker-compose.yml`; der Unterschied steckt in der lokalen `.env`-Datei.
 
+### Production-LXC
+
+`.env`:
 ```bash
-docker compose up -d
+COMPOSE_PROJECT_NAME=beihilfe-prod
+NODE_ENV=production
+BACKEND_PORT=3000
+FRONTEND_PORT=80
 ```
 
-Backend läuft auf Port 3000 (intern), Port 80 extern über nginx.
+### Development-LXC
 
-### Demo-Umgebung
-
+`.env`:
 ```bash
-docker compose -f docker-compose.demo.yml up -d
+COMPOSE_PROJECT_NAME=beihilfe-dev
+NODE_ENV=development
+BACKEND_PORT=3000
+FRONTEND_PORT=80
 ```
 
-Backend läuft (im Container) auf Port 3000, extern z.B. auf Port 3002 (siehe `docker-compose.demo.yml`).
+### Deployment-Befehl (identisch auf beiden LXCs)
 
-**Demo URL (lokal):** http://localhost:8081
+```bash
+cd /opt/beihilfe-planer
+git pull
+docker compose up -d --build
+```
 
-**Demo URL (Server):** http://<demo-host>:8081
-Details: [Datenbankdokumentation - Demo](../database/README.md#demo-datenbank-beispieldaten)
+Für die Dev-Umgebung können Beispieldaten geladen werden – siehe [Datenbankdokumentation – Demo](../database/README.md#demo-datenbank-beispieldaten).
 
 ---
 
