@@ -110,8 +110,8 @@ Die Anwendung wird in zwei getrennten Proxmox-LXCs betrieben – jeweils mit **e
 
 | Umgebung | Host | NODE_ENV |
 |----------|------|----------|
-| **Production** | `192.168.188.61` | `production` |
-| **Development** | eigene Dev-IP | `development` |
+| **Production** | `<prod-lxc-ip>` | `production` |
+| **Development** | `<dev-lxc-ip>` | `development` |
 
 Auf beiden LXCs liegt **dieselbe** `docker-compose.yml`. Maschinenspezifische Werte (Ports, Umgebung, Projektname) stehen in einer lokalen `.env`-Datei, die **nicht** in Git eingecheckt wird.
 
