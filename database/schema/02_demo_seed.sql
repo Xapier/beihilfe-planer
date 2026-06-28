@@ -193,6 +193,6 @@ VALUES ('ber-011', 11, 28.40, 28.40, 0.00, 5.68, 5.68, 0.00, 22.72, 22.72, 0.00,
 
 -- Aufwendung 12: 38 € – Max, Fahrtkosten, Beihilfe erstattet
 INSERT INTO aufwendung_berechnungen (id, aufwendungId, betrag, ausstehend, eigenbehalt, pkvSoll, pkvAusstehend, pkvErledigt, beihilfeSoll, beihilfeAusstehend, beihilfeErledigt, betSoll, betErledigt, calculatedAt)
-VALUES ('ber-012', 12, 38.00, 0.00, 0.00, 0.00, 0.00, 0.00, 38.00, 0.00, 38.00, 0, 0, CURRENT_TIMESTAMP);
+VALUES ('ber-012', 12, 38.00, 0.00, 19.00, 19.00, 0.00, 0.00, 19.00, 0.00, 19.00, 0, 0, CURRENT_TIMESTAMP);
 
 COMMIT;
