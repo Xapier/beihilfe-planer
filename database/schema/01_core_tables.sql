@@ -100,15 +100,18 @@ CREATE TABLE IF NOT EXISTS aufwendung_berechnungen (
   pkvSoll REAL,
   pkvAusstehend REAL,
   pkvErledigt REAL,
+  pkvTatsaechlich REAL DEFAULT 0,
 
   -- Beihilfe-Komponenten
   beihilfeSoll REAL,
   beihilfeAusstehend REAL,
   beihilfeErledigt REAL,
+  beihilfeTatsaechlich REAL DEFAULT 0,
 
   -- BET-Komponenten
   betSoll REAL,
   betErledigt REAL,
+  betTatsaechlich REAL DEFAULT 0,
 
   -- Audit
   lastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP,
