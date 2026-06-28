@@ -198,7 +198,7 @@ Verschiedene Aufwendungen mit unterschiedlichen Status-Kombinationen:
 **Gesamtsumme Demo-Bilanz:**
 - Gesamtbetrag: **4.549,20 €**
 - Ausstehend: **2.073,40 €**
-- Eigenbehalt: **2.073,40 €**
+- Eigenbehalt: **19,00 €**
 
 ### Verwendung
 
