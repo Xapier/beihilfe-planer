@@ -640,6 +640,20 @@
                         <button type="button" id="clearBeschreibungBtn" style="padding: 6px 8px; background: #e0e0e0; color: #333; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background 0.3s; display: none;" title="Filter löschen" onclick="clearBeschreibungFilter()">✕</button>
                     </div>
                 </div>
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">⚠️ Eigenbehalt</label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                        <input type="checkbox" id="filterEigenbehaltOffen" style="width: 16px; height: 16px; cursor: pointer;">
+                        <span>Nur offen (> 0€)</span>
+                    </label>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">⏳ Ausstehend</label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                        <input type="checkbox" id="filterAusstehendOffen" style="width: 16px; height: 16px; cursor: pointer;">
+                        <span>Nur offen (> 0€)</span>
+                    </label>
+                </div>
                 <div style="display: flex; flex-direction: column; justify-content: flex-end;">
                     <button type="button" onclick="resetFilters()" style="padding: 8px 10px; background: #ff6b6b; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.3s;">🔄 Filter zurücksetzen</button>
                 </div>
@@ -773,6 +787,8 @@
         let filterPkvStatus = '';
         let filterBeihilfeStatus = '';
         let filterBeschreibung = ''; // Freitextfilter für Beschreibung
+        let filterEigenbehaltOffen = false; // Filter für Positionen mit Eigenbehalt > 0
+        let filterAusstehendOffen = false; // Filter für Positionen mit Ausstehend > 0
         let isLoadingForm = false;  // Flag um AutoSave während Formularladen zu verhindern
         let currentSortColumn = 'datum'; // Standard-Sortierung nach Behandlungsdatum
         let currentSortDirection = 'desc'; // absteigend (neueste zuerst)
@@ -1214,6 +1230,8 @@
             filterPkvStatus = '';
             filterBeihilfeStatus = '';
             filterBeschreibung = '';
+            filterEigenbehaltOffen = false;
+            filterAusstehendOffen = false;
             
             document.getElementById('filterPatient').value = '';
             document.getElementById('filterJahr').value = '';
@@ -1221,6 +1239,8 @@
             document.getElementById('filterPkvStatus').value = '';
             document.getElementById('filterBeihilfeStatus').value = '';
             document.getElementById('filterBeschreibung').value = '';
+            document.getElementById('filterEigenbehaltOffen').checked = false;
+            document.getElementById('filterAusstehendOffen').checked = false;
             document.getElementById('clearBeschreibungBtn').style.display = 'none';
             
             applyFilters();
@@ -1274,6 +1294,16 @@
             applyFilters();
         });
 
+        document.getElementById('filterEigenbehaltOffen').addEventListener('change', function() {
+            filterEigenbehaltOffen = this.checked;
+            applyFilters();
+        });
+
+        document.getElementById('filterAusstehendOffen').addEventListener('change', function() {
+            filterAusstehendOffen = this.checked;
+            applyFilters();
+        });
+
         // =========================================================================
         // FILTER ANWENDEN
         // =========================================================================
@@ -1312,6 +1342,22 @@
                     return false;
                 }
                 
+                // Eigenbehalt offen Filter (Eigenbehalt > 0)
+                if (filterEigenbehaltOffen) {
+                    const eigenbehalt = auf.berechnungen?.eigenbehalt || 0;
+                    if (eigenbehalt <= 0) {
+                        return false;
+                    }
+                }
+                
+                // Ausstehend offen Filter (Ausstehend > 0)
+                if (filterAusstehendOffen) {
+                    const ausstehend = auf.berechnungen?.ausstehend || 0;
+                    if (ausstehend <= 0) {
+                        return false;
+                    }
+                }
+                
                 return true;
             });
 
@@ -1325,7 +1371,7 @@
         function updateFilterResults(filtered) {
             const resultsDiv = document.getElementById('filterResults');
             
-            const filtersActive = filterPatient || filterJahr || filterRechnungStatus || filterPkvStatus || filterBeihilfeStatus || filterBeschreibung;
+            const filtersActive = filterPatient || filterJahr || filterRechnungStatus || filterPkvStatus || filterBeihilfeStatus || filterBeschreibung || filterEigenbehaltOffen || filterAusstehendOffen;
             
             if (filtersActive) {
                 resultsDiv.style.display = 'block';
