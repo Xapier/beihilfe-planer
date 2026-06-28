@@ -281,16 +281,11 @@ Backend läuft auf Port 3000 (intern), Port 80 extern über nginx.
 docker compose -f docker-compose.demo.yml up -d
 ```
 
-Backend läuft auf Port 3002 mit Demo-Beispieldaten.
+Backend läuft (im Container) auf Port 3000, extern z.B. auf Port 3002 (siehe `docker-compose.demo.yml`).
 
-**Demo-Datenbank** mit realistischen Testdaten:
-- 3 Patienten mit verschiedenen PKV/Beihilfe-Quoten
-- 8 Kontakte (Ärzte, Zahnärzte, Klinik, Apotheke, etc.)
-- 12 Aufwendungen mit verschiedenen Status-Kombinationen
-- Gesamtbetrag: 4.549,20 € (Ausstehend: 2.073,40 €)
+**Demo URL (lokal):** http://localhost:8081
 
-**Demo URL:** [http://192.168.188.61:8081](http://192.168.188.61:8081)
-
+**Demo URL (Server):** http://<demo-host>:8081
 Details: [Datenbankdokumentation - Demo](../database/README.md#demo-datenbank-beispieldaten)
 
 ---
