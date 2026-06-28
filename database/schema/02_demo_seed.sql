@@ -131,10 +131,13 @@ VALUES
    '{"rechnungDatum":"2026-02-18","beihilfeDatum":"2026-03-01"}');
 
 -- =============================================================================
--- BERECHNUNGEN (entsprechend calculateAmounts()-Logik in migrations.js)
+-- BERECHNUNGEN (Demo: vorab befüllte Anzeige-Werte)
 -- =============================================================================
--- Formel:
---   pkvSoll    = betrag * (pkvQuote / 100)
+-- Hinweis:
+-- - Diese INSERTs befüllen `aufwendung_berechnungen` mit Beispielwerten für Doku/Screenshots.
+-- - Sie sind nicht automatisch aus `backend/src/db/migrations.js` (`calculateAmounts()`) abgeleitet.
+-- - Wenn sich die Berechnungslogik ändert, müssen diese Werte manuell aktualisiert werden.
+-- =============================================================================
 --   beihilfeSoll = betrag * (beihilfeQuote / 100)
 --   pkvAusstehend = pkvSoll wenn pkvStatus in (offen, eingereicht), sonst 0
 --   beihilfeAusstehend = beihilfeSoll wenn beihilfeStatus in (offen, eingereicht), sonst 0
