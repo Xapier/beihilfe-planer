@@ -81,9 +81,11 @@ async function migrateAddTatsaechlichColumns() {
       await db.run(`ALTER TABLE aufwendung_berechnungen ADD COLUMN ${col} REAL DEFAULT 0`);
       console.log(`✅ Spalte ${col} zu aufwendung_berechnungen hinzugefügt`);
     } catch (err) {
-      if (!err.message.includes('duplicate column name')) {
-        console.error(`❌ Fehler beim Hinzufügen von ${col}:`, err.message);
+      if (err.message.includes('duplicate column name')) {
+        continue;
       }
+      console.error(`❌ Fehler beim Hinzufügen von ${col}:`, err.message);
+      throw err;
     }
   }
 }
