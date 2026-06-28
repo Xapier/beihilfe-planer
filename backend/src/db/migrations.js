@@ -59,7 +59,8 @@ function calculateAmounts(patient, auf) {
   const beihilfeDifferenz = auf.beihilfeStatus === 'erstattet' && beihilfeTatsaechlich > 0
     ? Math.max(0, beihilfeSoll - beihilfeTatsaechlich) : 0;
 
-  const eigenbehalt = pkvEntfaelltAnteil + beihilfeEntfaelltAnteil + pkvDifferenz + beihilfeDifferenz;
+  const eigenbehaltRaw = pkvEntfaelltAnteil + beihilfeEntfaelltAnteil + pkvDifferenz + beihilfeDifferenz;
+  const eigenbehalt = Math.min(betrag, Math.max(0, eigenbehaltRaw));
 
   return {
     pkvSoll, pkvAusstehend, pkvErledigt, pkvTatsaechlich,
