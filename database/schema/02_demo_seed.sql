@@ -177,7 +177,7 @@ VALUES ('ber-007', 7, 680.00, 0.00, 0.00, 204.00, 0.00, 204.00, 340.00, 0.00, 34
 
 -- Aufwendung 8: 420 € – Erika, PKV eingereicht, Beihilfe offen
 INSERT INTO aufwendung_berechnungen (id, aufwendungId, betrag, ausstehend, eigenbehalt, pkvSoll, pkvAusstehend, pkvErledigt, beihilfeSoll, beihilfeAusstehend, beihilfeErledigt, betSoll, betErledigt, calculatedAt)
-VALUES ('ber-008', 8, 420.00, 420.00, 420.00, 126.00, 126.00, 0.00, 294.00, 294.00, 0.00, 0, 0, CURRENT_TIMESTAMP);
+VALUES ('ber-008', 8, 420.00, 420.00, 0.00, 126.00, 126.00, 0.00, 294.00, 294.00, 0.00, 0, 0, CURRENT_TIMESTAMP);
 
 -- Aufwendung 9: 95 € – Erika, vollständig erstattet
 INSERT INTO aufwendung_berechnungen (id, aufwendungId, betrag, ausstehend, eigenbehalt, pkvSoll, pkvAusstehend, pkvErledigt, beihilfeSoll, beihilfeAusstehend, beihilfeErledigt, betSoll, betErledigt, calculatedAt)
