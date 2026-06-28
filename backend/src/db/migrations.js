@@ -30,27 +30,65 @@ function calculateAmounts(patient, auf) {
   const beihilfeAusstehend = (auf.beihilfeStatus === 'offen' || auf.beihilfeStatus === 'eingereicht') ? beihilfeSoll : 0;
   const ausstehend = pkvAusstehend + beihilfeAusstehend;
 
-  // Erledigt: PKV/Beihilfe werden abgezogen, wenn Status = "erstattet"
-  const pkvErledigt = auf.pkvStatus === 'erstattet' ? pkvSoll : 0;
-  const beihilfeErledigt = auf.beihilfeStatus === 'erstattet' ? beihilfeSoll : 0;
-  
-  // Eigenbehalt: Berechnet wenn PKV = "entfällt" ODER "BRE offen" (zeige ausstehende BRE-Summen pro Patient)
-  // ODER wenn Beihilfe = "entfällt"
-  const eigenbehalt = (auf.pkvStatus === 'entfällt' || 
-                       auf.pkvStatus === 'BRE offen' ||
-                       auf.beihilfeStatus === 'entfällt') 
-    ? Math.max(0, betrag - pkvErledigt - beihilfeErledigt) 
+  // Erledigt: tatsächlich erstatteter Betrag nutzen falls angegeben, sonst Sollbetrag
+  // Wenn tatsächlicher Betrag < Soll, erhöht die Differenz den Eigenbehalt automatisch
+  const pkvTatsaechlich = auf.pkvBetrag || 0;
+  const beihilfeTatsaechlich = auf.beihilfeBetrag || 0;
+  const betTatsaechlich = auf.betBetrag || 0;
+
+  const pkvErledigt = auf.pkvStatus === 'erstattet'
+    ? (pkvTatsaechlich > 0 ? pkvTatsaechlich : pkvSoll)
+    : 0;
+  const beihilfeErledigt = auf.beihilfeStatus === 'erstattet'
+    ? (beihilfeTatsaechlich > 0 ? beihilfeTatsaechlich : beihilfeSoll)
+    : 0;
+  const betErledigt = auf.betStatus === 'erstattet'
+    ? (betTatsaechlich > 0 ? betTatsaechlich : 0)
     : 0;
 
-  // BET wird nicht abgezogen (immer "entfällt")
-  const betErledigt = 0;
+  // Eigenbehalt: explizit status-basiert
+  // 1. Vollständige Ablehnung: pkvSoll/beihilfeSoll geht an den Patienten
+  const pkvEntfaelltAnteil = (auf.pkvStatus === 'entfällt' || auf.pkvStatus === 'BRE offen' || auf.pkvStatus === 'abgelehnt')
+    ? pkvSoll : 0;
+  const beihilfeEntfaelltAnteil = (auf.beihilfeStatus === 'entfällt' || auf.beihilfeStatus === 'abgelehnt')
+    ? beihilfeSoll : 0;
+
+  // 2. Teilerstattung: Differenz Soll - Tatsächlich geht an den Patienten
+  const pkvDifferenz = auf.pkvStatus === 'erstattet' && pkvTatsaechlich > 0
+    ? Math.max(0, pkvSoll - pkvTatsaechlich) : 0;
+  const beihilfeDifferenz = auf.beihilfeStatus === 'erstattet' && beihilfeTatsaechlich > 0
+    ? Math.max(0, beihilfeSoll - beihilfeTatsaechlich) : 0;
+
+  const eigenbehaltRaw = pkvEntfaelltAnteil + beihilfeEntfaelltAnteil + pkvDifferenz + beihilfeDifferenz;
+  const eigenbehalt = Math.min(betrag, Math.max(0, eigenbehaltRaw));
 
   return {
-    pkvSoll, pkvAusstehend, pkvErledigt,
-    beihilfeSoll, beihilfeAusstehend, beihilfeErledigt,
-    betSoll, betErledigt,
+    pkvSoll, pkvAusstehend, pkvErledigt, pkvTatsaechlich,
+    beihilfeSoll, beihilfeAusstehend, beihilfeErledigt, beihilfeTatsaechlich,
+    betSoll, betErledigt, betTatsaechlich,
     ausstehend, eigenbehalt
   };
+}
+
+/**
+ * Migration 002: Füge tatsaechlich-Spalten zu aufwendung_berechnungen hinzu
+ * Idempotent – schlägt nicht fehl wenn Spalten bereits existieren
+ */
+async function migrateAddTatsaechlichColumns() {
+  const db = getDb();
+  const columns = ['pkvTatsaechlich', 'beihilfeTatsaechlich', 'betTatsaechlich'];
+  for (const col of columns) {
+    try {
+      await db.run(`ALTER TABLE aufwendung_berechnungen ADD COLUMN ${col} REAL DEFAULT 0`);
+      console.log(`✅ Spalte ${col} zu aufwendung_berechnungen hinzugefügt`);
+    } catch (err) {
+      if (err.message.includes('duplicate column name')) {
+        continue;
+      }
+      console.error(`❌ Fehler beim Hinzufügen von ${col}:`, err.message);
+      throw err;
+    }
+  }
 }
 
 /**
@@ -104,31 +142,38 @@ async function migrateLegacyCalculations() {
         const berechnungen = calculateAmounts(patient, {
           betrag: auf.betrag,
           pkvStatus: auf.pkvStatus,
-          beihilfeStatus: auf.beihilfeStatus
+          beihilfeStatus: auf.beihilfeStatus,
+          betStatus: auf.betStatus,
+          pkvBetrag: auf.pkvBetrag,
+          beihilfeBetrag: auf.beihilfeBetrag,
+          betBetrag: auf.betBetrag
         });
 
         // Speichere in neue Tabelle
         await db.run(
           `INSERT INTO aufwendung_berechnungen (
             id, aufwendungId, betrag, ausstehend, eigenbehalt,
-            pkvSoll, pkvAusstehend, pkvErledigt,
-            beihilfeSoll, beihilfeAusstehend, beihilfeErledigt,
-            betSoll, betErledigt, calculatedAt
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            pkvSoll, pkvAusstehend, pkvErledigt, pkvTatsaechlich,
+            beihilfeSoll, beihilfeAusstehend, beihilfeErledigt, beihilfeTatsaechlich,
+            betSoll, betErledigt, betTatsaechlich, calculatedAt
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             uuidv4(),
             auf.id,
-            auf.betrag, // ursprünglicher Rechnungsbetrag
+            auf.betrag,
             berechnungen.ausstehend,
             berechnungen.eigenbehalt,
             berechnungen.pkvSoll,
             berechnungen.pkvAusstehend,
             berechnungen.pkvErledigt,
+            berechnungen.pkvTatsaechlich,
             berechnungen.beihilfeSoll,
             berechnungen.beihilfeAusstehend,
             berechnungen.beihilfeErledigt,
+            berechnungen.beihilfeTatsaechlich,
             berechnungen.betSoll,
             berechnungen.betErledigt,
+            berechnungen.betTatsaechlich,
             new Date().toISOString()
           ]
         );
@@ -151,5 +196,6 @@ async function migrateLegacyCalculations() {
 
 module.exports = {
   calculateAmounts,
-  migrateLegacyCalculations
+  migrateLegacyCalculations,
+  migrateAddTatsaechlichColumns
 };

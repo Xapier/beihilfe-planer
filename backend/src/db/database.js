@@ -33,8 +33,9 @@ async function initDb() {
   // Führe Migrationen aus
   console.log('🔄 Versuche Migrationen zu laden und zu starten...');
   try {
-    const { migrateLegacyCalculations } = require('./migrations');
+    const { migrateLegacyCalculations, migrateAddTatsaechlichColumns } = require('./migrations');
     console.log('✅ Migrations Modul geladen');
+    await migrateAddTatsaechlichColumns();
     await migrateLegacyCalculations();
   } catch (err) {
     console.error('❌ Fehler beim Laden der Migrationen:', err.message);
@@ -125,11 +126,14 @@ async function createTables() {
       pkvSoll REAL,
       pkvAusstehend REAL,
       pkvErledigt REAL,
+      pkvTatsaechlich REAL DEFAULT 0,
       beihilfeSoll REAL,
       beihilfeAusstehend REAL,
       beihilfeErledigt REAL,
+      beihilfeTatsaechlich REAL DEFAULT 0,
       betSoll REAL,
       betErledigt REAL,
+      betTatsaechlich REAL DEFAULT 0,
       
       -- Audit
       lastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP,

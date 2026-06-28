@@ -259,7 +259,11 @@ class Aufwendung {
       const berechnungen = calculateAmounts(patient, {
         betrag: aufwendung.betrag,
         pkvStatus: aufwendung.status.pkv,
-        beihilfeStatus: aufwendung.status.beihilfe
+        beihilfeStatus: aufwendung.status.beihilfe,
+        betStatus: aufwendung.status.bet,
+        pkvBetrag: aufwendung.betraege.pkv,
+        beihilfeBetrag: aufwendung.betraege.beihilfe,
+        betBetrag: aufwendung.betraege.bet
       });
 
       // Überprüfe ob Calculation bereits existiert
@@ -273,9 +277,9 @@ class Aufwendung {
         await db.run(
           `UPDATE aufwendung_berechnungen SET
             betrag = ?, ausstehend = ?, eigenbehalt = ?,
-            pkvSoll = ?, pkvAusstehend = ?, pkvErledigt = ?,
-            beihilfeSoll = ?, beihilfeAusstehend = ?, beihilfeErledigt = ?,
-            betSoll = ?, betErledigt = ?, calculatedAt = ?
+            pkvSoll = ?, pkvAusstehend = ?, pkvErledigt = ?, pkvTatsaechlich = ?,
+            beihilfeSoll = ?, beihilfeAusstehend = ?, beihilfeErledigt = ?, beihilfeTatsaechlich = ?,
+            betSoll = ?, betErledigt = ?, betTatsaechlich = ?, calculatedAt = ?
             WHERE aufwendungId = ?`,
           [
             aufwendung.betrag,
@@ -284,11 +288,14 @@ class Aufwendung {
             berechnungen.pkvSoll,
             berechnungen.pkvAusstehend,
             berechnungen.pkvErledigt,
+            berechnungen.pkvTatsaechlich,
             berechnungen.beihilfeSoll,
             berechnungen.beihilfeAusstehend,
             berechnungen.beihilfeErledigt,
+            berechnungen.beihilfeTatsaechlich,
             berechnungen.betSoll,
             berechnungen.betErledigt,
+            berechnungen.betTatsaechlich,
             new Date().toISOString(),
             aufwendungId
           ]
@@ -298,10 +305,10 @@ class Aufwendung {
         await db.run(
           `INSERT INTO aufwendung_berechnungen (
             id, aufwendungId, betrag, ausstehend, eigenbehalt,
-            pkvSoll, pkvAusstehend, pkvErledigt,
-            beihilfeSoll, beihilfeAusstehend, beihilfeErledigt,
-            betSoll, betErledigt, calculatedAt
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            pkvSoll, pkvAusstehend, pkvErledigt, pkvTatsaechlich,
+            beihilfeSoll, beihilfeAusstehend, beihilfeErledigt, beihilfeTatsaechlich,
+            betSoll, betErledigt, betTatsaechlich, calculatedAt
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             uuidv4(),
             aufwendungId,
@@ -311,11 +318,14 @@ class Aufwendung {
             berechnungen.pkvSoll,
             berechnungen.pkvAusstehend,
             berechnungen.pkvErledigt,
+            berechnungen.pkvTatsaechlich,
             berechnungen.beihilfeSoll,
             berechnungen.beihilfeAusstehend,
             berechnungen.beihilfeErledigt,
+            berechnungen.beihilfeTatsaechlich,
             berechnungen.betSoll,
             berechnungen.betErledigt,
+            berechnungen.betTatsaechlich,
             new Date().toISOString()
           ]
         );
@@ -346,11 +356,14 @@ class Aufwendung {
           pkvSoll: row.pkvSoll,
           pkvAusstehend: row.pkvAusstehend,
           pkvErledigt: row.pkvErledigt,
+          pkvTatsaechlich: row.pkvTatsaechlich,
           beihilfeSoll: row.beihilfeSoll,
           beihilfeAusstehend: row.beihilfeAusstehend,
           beihilfeErledigt: row.beihilfeErledigt,
+          beihilfeTatsaechlich: row.beihilfeTatsaechlich,
           betSoll: row.betSoll,
-          betErledigt: row.betErledigt
+          betErledigt: row.betErledigt,
+          betTatsaechlich: row.betTatsaechlich
         };
       }
       return null;
