@@ -193,7 +193,7 @@ Verschiedene Aufwendungen mit unterschiedlichen Status-Kombinationen:
 | 🟡 Alles offen | Arztbesuch gerade erfolgt |
 | 🟣 Überfällig | Alte Apotheken-Rechnung |
 | 🔄 BET aktiv | Zahnleistung mit Beamten-Ergänzungs-Tarif |
-| 💵 Eigenbehalt | Fahrtkosten (gesamt Patient zahlt) |
+| 💵 Eigenbehalt | Fahrtkosten (PKV entfällt, Beihilfe erstattet anteilig) |
 
 **Gesamtsumme Demo-Bilanz:**
 - Gesamtbetrag: **4.549,20 €**
