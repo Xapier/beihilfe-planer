@@ -17,7 +17,7 @@ Jeder Patient (Antragsteller oder Familienmitglied) wird mit individuellen Ersta
 
 ### Aufwendungen
 
-Kern der Anwendung. Jede Aufwendung durchläuft ein **5-Säulen-System**:
+Kern der Anwendung. Jede Aufwendung durchläuft ein **3-Säulen-System**:
 
 | Säule | Beschreibung |
 |-------|-------------|
@@ -193,7 +193,7 @@ Die Dev-Umgebung läuft in einem eigenen LXC und beeinträchtigt nicht die Produ
 
 ### 📋 Aufwendungen & Status
 
-**Zweck:** Zentrale Verwaltung aller medizinischen Aufwendungen mit dem 5-Säulen-Status-System
+**Zweck:** Zentrale Verwaltung aller medizinischen Aufwendungen mit dem 3-Säulen-Status-System
 
 **Oberflächen-Bereiche:**
 

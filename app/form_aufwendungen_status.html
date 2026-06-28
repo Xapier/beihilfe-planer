@@ -270,7 +270,7 @@
             min-height: 60px;
         }
 
-        /* 5-SÄULEN STATUS */
+        /* 3-SÄULEN STATUS */
         .five-pillars {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -428,7 +428,7 @@
         <form class="form-section" id="aufwendungenForm">
             <h2 class="section-title">➕ Neue Aufwendung erfassen</h2>
             <div class="info-box">
-                💡 <strong>Tipp:</strong> Füllen Sie die Grunddaten aus und wählen Sie den Status für jede Säule (5-Säulen-Prinzip). Die Ampel in der Tabelle unten aktualisiert sich automatisch.
+                💡 <strong>Tipp:</strong> Füllen Sie die Grunddaten aus und wählen Sie den Status für jede Säule (3-Säulen-Prinzip). Die Ampel in der Tabelle unten aktualisiert sich automatisch.
             </div>
 
             <!-- BUTTONS -->
@@ -513,8 +513,8 @@
                 </div>
             </div>
 
-            <!-- 5-SÄULEN STATUS -->
-            <h3 style="font-size: 15px; font-weight: 600; color: #333; margin-bottom: 15px; margin-top: 25px;">5-Säulen Status</h3>
+            <!-- 3-SÄULEN STATUS -->
+            <h3 style="font-size: 15px; font-weight: 600; color: #333; margin-bottom: 15px; margin-top: 25px;">3-Säulen Status</h3>
 
             <div class="five-pillars">
                 <!-- RECHNUNG -->
@@ -559,28 +559,6 @@
                     </div>
                 </div>
 
-                <!-- BET -->
-                <div class="pillar">
-                    <div class="pillar-title">�🏛️ Beihilfeergänzung (BET)</div>
-                    <div class="pillar-control">
-                        <select name="bet-status" onchange="updateCalculations(); handleStatusChange('bet')">
-                            <option value="offen">Offen</option>
-                            <option value="eingereicht">Eingereicht</option>
-                            <option value="erstattet">Erstattet</option>
-                            <option value="entfällt" selected>Entfällt</option>
-                        </select>
-                    </div>
-                    <div class="pillar-control">
-                        <input type="date" name="bet-datum" placeholder="Datum">
-                    </div>
-                    <div style="font-size: 10px; color: #666; margin-top: 8px; padding: 5px; background: #f0f0f0; border-radius: 3px;">
-                        <strong>Quote:</strong> <span id="bet-quote-display">-</span>%<br>
-                        <strong>Sollbetrag:</strong> <span id="bet-sollbetrag">€ 0.00</span><br>
-                        <input type="number" name="bet-betrag" min="0" step="0.01" placeholder="Tatsächlich" onchange="updateCalculations()" style="width: 100%; margin-top: 3px; padding: 3px; font-size: 9px;">
-                        <div style="margin-top: 3px; color: #f44;" id="bet-diff"></div>
-                    </div>
-                </div>
-
                 <!-- BEIHILFE -->
                 <div class="pillar">
                     <div class="pillar-title">🏛️ Beihilfe</div>
@@ -603,7 +581,7 @@
                     </div>
                 </div>
 
-            </div><!-- Ende 5-Säulen -->
+            </div><!-- Ende 3-Säulen -->
 
         </form>
 
@@ -661,6 +639,20 @@
                         <input type="text" id="filterBeschreibung" placeholder="Suchtext..." style="flex: 1; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
                         <button type="button" id="clearBeschreibungBtn" style="padding: 6px 8px; background: #e0e0e0; color: #333; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background 0.3s; display: none;" title="Filter löschen" onclick="clearBeschreibungFilter()">✕</button>
                     </div>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">⚠️ Eigenbehalt</label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                        <input type="checkbox" id="filterEigenbehaltOffen" style="width: 16px; height: 16px; cursor: pointer;">
+                        <span>Nur offen (> 0€)</span>
+                    </label>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-weight: 600; color: #333; margin-bottom: 5px; font-size: 13px;">⏳ Ausstehend</label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                        <input type="checkbox" id="filterAusstehendOffen" style="width: 16px; height: 16px; cursor: pointer;">
+                        <span>Nur offen (> 0€)</span>
+                    </label>
                 </div>
                 <div style="display: flex; flex-direction: column; justify-content: flex-end;">
                     <button type="button" onclick="resetFilters()" style="padding: 8px 10px; background: #ff6b6b; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.3s;">🔄 Filter zurücksetzen</button>
@@ -744,14 +736,13 @@
                         <th class="amount-col">Betrag</th>
                         <th class="amount-col">Eigenbehalt</th>
                         <th class="amount-col">Ausstehend</th>
-                        <th colspan="4" style="text-align: center;">4-Säulen Status</th>
+                        <th colspan="3" style="text-align: center;">3-Säulen Status</th>
                         <th class="actions-col">Aktionen</th>
                     </tr>
                     <tr>
                         <th colspan="9"></th>
                         <th class="status-col" title="Rechnung">Rechn.</th>
                         <th class="status-col" title="PKV">PKV</th>
-                        <th class="status-col" title="Beihilfeergänzung">Beihilfeerg.</th>
                         <th class="status-col" title="Beihilfe">Beihilfe</th>
                     </tr>
                 <tbody id="tableBody">
@@ -796,6 +787,8 @@
         let filterPkvStatus = '';
         let filterBeihilfeStatus = '';
         let filterBeschreibung = ''; // Freitextfilter für Beschreibung
+        let filterEigenbehaltOffen = false; // Filter für Positionen mit Eigenbehalt > 0
+        let filterAusstehendOffen = false; // Filter für Positionen mit Ausstehend > 0
         let isLoadingForm = false;  // Flag um AutoSave während Formularladen zu verhindern
         let currentSortColumn = 'datum'; // Standard-Sortierung nach Behandlungsdatum
         let currentSortDirection = 'desc'; // absteigend (neueste zuerst)
@@ -1012,31 +1005,24 @@
             // Quoten anzeigen
             document.getElementById('pkv-quote-display').textContent = aktuelleQuoten.pkv || '-';
             document.getElementById('beihilfe-quote-display').textContent = aktuelleQuoten.beihilfe || '-';
-            document.getElementById('bet-quote-display').textContent = aktuelleQuoten.bet || '-';
-
             // Status auslesen
             const pkvStatus = document.querySelector('[name="pkv-status"]').value;
-            const betStatus = document.querySelector('[name="bet-status"]').value;
             const beihilfeStatus = document.querySelector('[name="beihilfe-status"]').value;
 
             // Sollbeträge berechnen (auf 0 setzen, wenn Status "entfällt")
             const pkvSoll = pkvStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.pkv) / 100;
-            const betSoll = betStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.bet) / 100;
             const beihilfeSoll = beihilfeStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.beihilfe) / 100;
 
             document.getElementById('pkv-sollbetrag').textContent = formatCurrency(pkvSoll);
             document.getElementById('beihilfe-sollbetrag').textContent = formatCurrency(beihilfeSoll);
-            document.getElementById('bet-sollbetrag').textContent = formatCurrency(betSoll);
 
             // Istbeträge auslesen
             const pkvIst = parseFloat(document.querySelector('[name="pkv-betrag"]').value) || 0;
             const beihilfeIst = parseFloat(document.querySelector('[name="beihilfe-betrag"]').value) || 0;
-            const betIst = parseFloat(document.querySelector('[name="bet-betrag"]').value) || 0;
 
             // Differenzen berechnen und anzeigen
             showDifference('pkv', pkvSoll, pkvIst);
             showDifference('beihilfe', beihilfeSoll, beihilfeIst);
-            showDifference('bet', betSoll, betIst);
         }
 
         function showDifference(saeule, soll, ist) {
@@ -1060,17 +1046,14 @@
 
             // Status auslesen
             const pkvStatus = document.querySelector('[name="pkv-status"]').value;
-            const betStatus = document.querySelector('[name="bet-status"]').value;
             const beihilfeStatus = document.querySelector('[name="beihilfe-status"]').value;
 
             // Sollbeträge berechnen (auf 0 setzen, wenn Status "entfällt")
             const pkvSoll = pkvStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.pkv) / 100;
             const beihilfeSoll = beihilfeStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.beihilfe) / 100;
-            const betSoll = betStatus === 'entfällt' ? 0 : (rechnungsBetrag * aktuelleQuoten.bet) / 100;
 
             document.querySelector('[name="pkv-betrag"]').value = pkvSoll.toFixed(2);
             document.querySelector('[name="beihilfe-betrag"]').value = beihilfeSoll.toFixed(2);
-            document.querySelector('[name="bet-betrag"]').value = betSoll.toFixed(2);
 
             updateCalculations();
         }
@@ -1247,6 +1230,8 @@
             filterPkvStatus = '';
             filterBeihilfeStatus = '';
             filterBeschreibung = '';
+            filterEigenbehaltOffen = false;
+            filterAusstehendOffen = false;
             
             document.getElementById('filterPatient').value = '';
             document.getElementById('filterJahr').value = '';
@@ -1254,6 +1239,8 @@
             document.getElementById('filterPkvStatus').value = '';
             document.getElementById('filterBeihilfeStatus').value = '';
             document.getElementById('filterBeschreibung').value = '';
+            document.getElementById('filterEigenbehaltOffen').checked = false;
+            document.getElementById('filterAusstehendOffen').checked = false;
             document.getElementById('clearBeschreibungBtn').style.display = 'none';
             
             applyFilters();
@@ -1307,6 +1294,16 @@
             applyFilters();
         });
 
+        document.getElementById('filterEigenbehaltOffen').addEventListener('change', function() {
+            filterEigenbehaltOffen = this.checked;
+            applyFilters();
+        });
+
+        document.getElementById('filterAusstehendOffen').addEventListener('change', function() {
+            filterAusstehendOffen = this.checked;
+            applyFilters();
+        });
+
         // =========================================================================
         // FILTER ANWENDEN
         // =========================================================================
@@ -1345,6 +1342,22 @@
                     return false;
                 }
                 
+                // Eigenbehalt offen Filter (Eigenbehalt > 0)
+                if (filterEigenbehaltOffen) {
+                    const eigenbehalt = auf.berechnungen?.eigenbehalt || 0;
+                    if (eigenbehalt <= 0) {
+                        return false;
+                    }
+                }
+                
+                // Ausstehend offen Filter (Ausstehend > 0)
+                if (filterAusstehendOffen) {
+                    const ausstehend = auf.berechnungen?.ausstehend || 0;
+                    if (ausstehend <= 0) {
+                        return false;
+                    }
+                }
+                
                 return true;
             });
 
@@ -1358,7 +1371,7 @@
         function updateFilterResults(filtered) {
             const resultsDiv = document.getElementById('filterResults');
             
-            const filtersActive = filterPatient || filterJahr || filterRechnungStatus || filterPkvStatus || filterBeihilfeStatus || filterBeschreibung;
+            const filtersActive = filterPatient || filterJahr || filterRechnungStatus || filterPkvStatus || filterBeihilfeStatus || filterBeschreibung || filterEigenbehaltOffen || filterAusstehendOffen;
             
             if (filtersActive) {
                 resultsDiv.style.display = 'block';
@@ -1470,7 +1483,6 @@
                     }
 
                     const pkvDatum = formatDateDDMMYYYY(auf.daten?.pkv);
-                    const betDatum = formatDateDDMMYYYY(auf.daten?.bet);
                     const beihilfeDatum = formatDateDDMMYYYY(auf.daten?.beihilfe);
                     
                     // Formatiere Währungen BEVOR sie verwendet werden
@@ -1478,8 +1490,6 @@
                     const formattedPkvSoll = formatCurrency(berechnungen.pkvSoll || 0);
                     const formattedPkvErledigt = formatCurrency(berechnungen.pkvErledigt || 0);
                     const formattedPkvAusstehend = formatCurrency(berechnungen.pkvAusstehend || 0);
-                    const formattedBetSoll = formatCurrency(berechnungen.betSoll || 0);
-                    const formattedBetErledigt = formatCurrency(berechnungen.betErledigt || 0);
                     const formattedBeihilfeSoll = formatCurrency(berechnungen.beihilfeSoll || 0);
                     const formattedBeihilfeErledigt = formatCurrency(berechnungen.beihilfeErledigt || 0);
                     const formattedBeihilfeAusstehend = formatCurrency(berechnungen.beihilfeAusstehend || 0);
@@ -1508,12 +1518,7 @@
                                     <div class="status-indicator" data-status="${auf.status.pkv}" title="PKV: ${auf.status.pkv}&#10;Datum: ${pkvDatum}&#10;Soll: ${formattedPkvSoll}&#10;Erledigt: ${formattedPkvErledigt}&#10;Offen: ${formattedPkvAusstehend}">PKV</div>
                                 </div>
                             </td>
-                            <td class="status-col">
-                                <div class="status-cell">
-                                    <div class="status-indicator" data-status="${auf.status.bet}" title="BET: ${auf.status.bet}&#10;Datum: ${betDatum}&#10;Soll: ${formattedBetSoll}&#10;Erledigt: ${formattedBetErledigt}&#10;Offen: 0,00 €">BET</div>
-                                </div>
-                            </td>
-                            <td class="status-col">
+<td class="status-col">
                                 <div class="status-cell">
                                     <div class="status-indicator" data-status="${auf.status.beihilfe}" title="Beihilfe: ${auf.status.beihilfe}&#10;Datum: ${beihilfeDatum}&#10;Soll: ${formattedBeihilfeSoll}&#10;Erledigt: ${formattedBeihilfeErledigt}&#10;Offen: ${formattedBeihilfeAusstehend}">Beihilfe</div>
                                 </div>
@@ -1702,19 +1707,16 @@
             const status = {
                 rechnung: document.querySelector('[name="rechnung-status"]').value,
                 pkv: document.querySelector('[name="pkv-status"]').value,
-                bet: document.querySelector('[name="bet-status"]').value,
                 beihilfe: document.querySelector('[name="beihilfe-status"]').value
             };
 
             const betraege = {
                 pkv: parseFloat(document.querySelector('[name="pkv-betrag"]').value) || 0,
-                bet: parseFloat(document.querySelector('[name="bet-betrag"]').value) || 0,
                 beihilfe: parseFloat(document.querySelector('[name="beihilfe-betrag"]').value) || 0
             };
 
             const daten = {
                 pkv: document.querySelector('[name="pkv-datum"]').value || null,
-                bet: document.querySelector('[name="bet-datum"]').value || null,
                 beihilfe: document.querySelector('[name="beihilfe-datum"]').value || null
             };
 
@@ -1827,15 +1829,12 @@
 
             document.querySelector('[name="rechnung-status"]').value = auf.status.rechnung;
             document.querySelector('[name="pkv-status"]').value = auf.status.pkv;
-            document.querySelector('[name="bet-status"]').value = auf.status.bet;
             document.querySelector('[name="beihilfe-status"]').value = auf.status.beihilfe;
 
             document.querySelector('[name="pkv-betrag"]').value = auf.betraege?.pkv || '';
-            document.querySelector('[name="bet-betrag"]').value = auf.betraege?.bet || '';
             document.querySelector('[name="beihilfe-betrag"]').value = auf.betraege?.beihilfe || '';
 
             document.querySelector('[name="pkv-datum"]').value = auf.daten?.pkv || '';
-            document.querySelector('[name="bet-datum"]').value = auf.daten?.bet || '';
             document.querySelector('[name="beihilfe-datum"]').value = auf.daten?.beihilfe || '';
 
             updateCalculations();
@@ -1870,8 +1869,6 @@
             document.getElementById('faelligkeitsDatum').value = today;
 
             // Standardwerte für Status
-            document.querySelector('[name="bet-status"]').value = 'entfällt';
-
             // Berechnung aktualisieren
             updateCalculations();
 
