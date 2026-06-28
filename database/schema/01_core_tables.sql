@@ -84,8 +84,8 @@ CREATE TABLE IF NOT EXISTS aufwendungen (
 -- ============================================================================
 -- 4. AUFWENDUNG_BERECHNUNGEN (Berechnete Werte – zentral im Backend)
 -- ============================================================================
--- Wird von calculateAmounts() in migrations.js befüllt und aktualisiert.
--- Frontend liest NUR diese Tabelle für Beträge (kein eigenes Berechnen).
+-- Wird vom Backend (calculateAmounts() in backend/src/db/migrations.js) befüllt und aktualisiert.
+-- Das Frontend sollte diese Werte bevorzugt nutzen; es kann jedoch Anzeige-/Fallback-Logik im Frontend/Backend geben.
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS aufwendung_berechnungen (
   id TEXT PRIMARY KEY,
